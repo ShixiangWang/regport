@@ -1,0 +1,21 @@
+Package: regport
+Title: Regression Model Processing Port
+Version: 0.0.0.9000
+Authors@R: 
+    person("Shixiang", "Wang", , "w_shixiang@163.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9855-7357"))
+Description: Provides R6 classes, methods and utilities to construct,
+    analyze, summarize, and visualize regression models.
+License: MIT + file LICENSE
+URL: https://github.com/ShixiangWang/regport
+BugReports: https://github.com/ShixiangWang/regport/issues
+Imports: 
+    data.table,
+    R6
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
+    "roxytest::testthat_roclet"))
+RoxygenNote: 7.1.2
