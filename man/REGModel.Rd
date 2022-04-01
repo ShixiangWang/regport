@@ -6,6 +6,7 @@
 \description{
 Contains fields storing data and methods to build, process and visualize
 a regression model.
+Currently, this class is designed for CoxPH and GLM regression models.
 }
 \examples{
 library(survival)
@@ -15,9 +16,29 @@ test1 <- data.frame(
   x = c(0, 2, 1, 1, 1, 0, 0),
   sex = c(0, 0, 0, 0, 1, 1, 1)
 )
-mm <- REGModel$new(as.data.frame(test1), Surv(time, status) ~ x + strata(sex), f = survival::coxph)
+
+# --------------
+# Build a model
+# --------------
+
+# way 1:
+mm <- REGModel$new(
+  as.data.frame(test1),
+  Surv(time, status) ~ x + strata(sex)
+)
 mm
 as.data.frame(mm$result)
+
+# way 2:
+mm2 <- REGModel$new(
+  as.data.frame(test1),
+  recipe = list(
+    x = c("x", "strata(sex)"),
+    y = c("time", "status")
+  )
+)
+mm2
+
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -26,9 +47,7 @@ as.data.frame(mm$result)
 
 \item{\code{recipe}}{an R \code{formula} storing model formula.}
 
-\item{\code{f}}{an R \code{function} storing model constructor, e.g., \link[survival:coxph]{survival::coxph}.}
-
-\item{\code{focal_term}}{a user focused term (covariable).}
+\item{\code{f}}{a string specifying modeling function, default is 'coxph'.}
 
 \item{\code{terms}}{all terms (covariables, i.e. columns) used for building model.}
 
@@ -49,7 +68,6 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \item \href{#method-new}{\code{REGModel$new()}}
 \item \href{#method-plot}{\code{REGModel$plot()}}
 \item \href{#method-print}{\code{REGModel$print()}}
-\item \href{#method-clone}{\code{REGModel$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -58,7 +76,15 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \subsection{Method \code{new()}}{
 Build a \code{REGModel} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModel$new(data, recipe, f, ..., exp = TRUE, ci = 0.95)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModel$new(
+  data,
+  recipe,
+  ...,
+  f = c("coxph", "binomial", "gaussian", "Gamma", "inverse.gaussian", "poisson",
+    "quasi", "quasibinomial", "quasipoisson"),
+  exp = TRUE,
+  ci = 0.95
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -66,11 +92,15 @@ Build a \code{REGModel} object.
 \describe{
 \item{\code{data}}{a \code{data.table} storing modeling data.}
 
-\item{\code{recipe}}{an R \code{formula} storing model formula.}
-
-\item{\code{f}}{a R \code{function} storing model constructor, e.g., \link[survival:coxph]{survival::coxph}.}
+\item{\code{recipe}}{an R \code{formula} or a list with two elements 'x' and 'y',
+where 'x' is for covariables and 'y' is for label. See example for detail
+operation.}
 
 \item{\code{...}}{other parameters passing to corresponding regression model function.}
+
+\item{\code{f}}{a length-1 string specifying modeling function, default is 'coxph'.
+Other options are members of GLM family, see \code{\link[stats:family]{stats::family()}}.
+'binomial' is logistic, and 'gaussian' is linear.}
 
 \item{\code{exp}}{indicating whether or not to exponentiate the the coefficients.}
 
@@ -106,23 +136,6 @@ print the \code{REGModel} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{unused.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModel$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
 }
 \if{html}{\out{</div>}}
 }

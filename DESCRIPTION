@@ -16,6 +16,7 @@ Imports:
     parameters,
     R6,
     rlang (>= 0.4.11),
+    stats,
     survival
 Suggests: 
     roxygen2,
