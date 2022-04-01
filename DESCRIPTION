@@ -12,8 +12,11 @@ URL: https://github.com/ShixiangWang/regport,
 BugReports: https://github.com/ShixiangWang/regport/issues
 Imports: 
     data.table,
+    glue,
+    parameters,
     R6,
-    rlang (>= 0.4.11)
+    rlang (>= 0.4.11),
+    survival
 Suggests: 
     roxygen2,
     testthat (>= 3.0.0)
