@@ -49,7 +49,6 @@ REGModel <- R6::R6Class(
   public = list(
     #' @field data a `data.table` storing modeling data.
     #' @field recipe an R `formula` storing model formula.
-    #' @field f a string specifying modeling function, default is 'coxph'.
     #' @field terms all terms (covariables, i.e. columns) used for building model.
     #' @field args other arguments used for building model.
     #' @field model a constructed model.
@@ -58,7 +57,6 @@ REGModel <- R6::R6Class(
     #' data.frame with [as.data.frame()] or [data.table::as.data.table()].
     data = NULL,
     recipe = NULL,
-    f = NULL,
     terms = NULL,
     args = NULL,
     model = NULL,

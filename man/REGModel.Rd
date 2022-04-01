@@ -47,8 +47,6 @@ mm2
 
 \item{\code{recipe}}{an R \code{formula} storing model formula.}
 
-\item{\code{f}}{a string specifying modeling function, default is 'coxph'.}
-
 \item{\code{terms}}{all terms (covariables, i.e. columns) used for building model.}
 
 \item{\code{args}}{other arguments used for building model.}
