@@ -14,7 +14,7 @@ Currently, this class is designed for CoxPH and GLM regression models."><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,7 +130,7 @@ operation.</p></dd>
 
 
 <dt><code>f</code></dt>
-<dd><p>a length-1 string specifying modeling function, default is 'coxph'.
+<dd><p>a length-1 string specifying modeling function or family of <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code>, default is 'coxph'.
 Other options are members of GLM family, see <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::family()</a></code>.
 'binomial' is logistic, and 'gaussian' is linear.</p></dd>
 
@@ -195,7 +195,7 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># way 1:</span></span>
 <span class="r-in"><span class="va">mm</span> <span class="op">&lt;-</span> <span class="va">REGModel</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">test1</span><span class="op">)</span>,</span>
+<span class="r-in">  <span class="va">test1</span>,</span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/strata.html" class="external-link">strata</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'parameters':</span>
@@ -220,7 +220,7 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># way 2:</span></span>
 <span class="r-in"><span class="va">mm2</span> <span class="op">&lt;-</span> <span class="va">REGModel</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">test1</span><span class="op">)</span>,</span>
+<span class="r-in">  <span class="va">test1</span>,</span>
 <span class="r-in">  recipe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span class="r-in">    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"strata(sex)"</span><span class="op">)</span>,</span>
 <span class="r-in">    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span></span>
@@ -237,6 +237,21 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Wald z-distribution approximation.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># Add other parameters, e.g., weights</span></span>
+<span class="r-in"><span class="co"># For more, see ?coxph</span></span>
+<span class="r-in"><span class="va">mm3</span> <span class="op">&lt;-</span> <span class="va">REGModel</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span class="r-in">  <span class="va">test1</span>,</span>
+<span class="r-in">  recipe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span class="r-in">    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"strata(sex)"</span><span class="op">)</span>,</span>
+<span class="r-in">    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span></span>
+<span class="r-in">  <span class="op">)</span>,</span>
+<span class="r-in">  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span class="va">mm3</span><span class="op">$</span><span class="va">args</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 1 1 2 2 2 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
