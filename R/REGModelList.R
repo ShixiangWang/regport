@@ -30,121 +30,96 @@ REGModelList <- R6::R6Class(
     #' @field result model result, a object of `parameters_model`. Can be converted into
     #' data.frame with [as.data.frame()] or [data.table::as.data.table()].
     data = NULL,
-    recipe = NULL,
-    terms = NULL,
+    x = NULL,
+    y = NULL,
+    covars = NULL,
     args = NULL,
-    model = NULL,
+    mlist = NULL,
     type = NULL,
     result = NULL,
-    #' @description Build a `REGModel` object.
+    forest_data = NULL,
+    #' @description Create a `REGModelList` object.
     #' @param data a `data.table` storing modeling data.
-    #' @param recipe an R `formula` or a list with two elements 'x' and 'y',
-    #' where 'x' is for covariables and 'y' is for label. See example for detail
-    #' operation.
-    #' @param f a length-1 string specifying modeling function or family of [glm()], default is 'coxph'.
-    #' Other options are members of GLM family, see [stats::family()].
-    #' 'binomial' is logistic, and 'gaussian' is linear.
-    #' @param ... other parameters passing to corresponding regression model function.
-    #' @param exp indicating whether or not to exponentiate the the coefficients.
-    #' @param ci confidence Interval (CI) level. Default to 0.95 (95%).
-    #' e.g. [survival::coxph()].
-    #' @return a `REGModel` R6 object.
-    initialize = function(data, recipe, ...,
-                          f = c(
-                            "coxph", "binomial", "gaussian",
-                            "Gamma", "inverse.gaussian",
-                            "poisson", "quasi", "quasibinomial",
-                            "quasipoisson"
-                          ),
-                          exp = TRUE, ci = 0.95) {
-      f <- f[1]
-      stopifnot(
-        is.data.frame(data),
-        rlang::is_formula(recipe) | is.list(recipe),
-        length(f) == 1 & is.character(f)
-      )
+    #' @return a `REGModelList` R6 object.
+    initialize = function(data, y, x, covars = NULL) {
+      stopifnot(is.data.frame(data))
 
-      if (f == "coxph") {
-        .f <- survival::coxph
-      } else {
-        .f <- stats::glm
-      }
-
-      get_vars <- function(text) {
-        all.vars(parse(text = text))
-      }
-
-      if (is.list(recipe)) {
-        if (!all(c("x", "y") %in% names(recipe))) {
-          rlang::abort("If recipe is a list, 'x' and 'y' element must exist")
-        }
-        x <- recipe$x
-        y <- recipe$y
-        x_vars <- unique(sapply(x, get_vars))
-        y_vars <- unique(sapply(y, get_vars))
-        self$terms <- x_vars
-        all_vars <- c(x_vars, y_vars)
-        # Update recipe to a formula
-        recipe <- if (f == "coxph") {
-          if (length(y) < 2) {
-            rlang::warn("time and status for Surv object are not here, maybe a bad input of 'y' element in 'recipe'")
-          }
-          glue("Surv({paste(y, collapse = ', ')}) ~ {paste(unique(x), collapse = ' + ')}")
-        } else {
-          glue("{paste(y, collapse = ' + ')} ~ {paste(unique(x), collapse = ' + ')}")
-        }
-        recipe <- stats::formula(recipe)
-      } else {
-        all_vars <- all.vars(recipe)
-        recipe_list <- as.list(recipe)
-        if (length(recipe_list) < 2) {
-          rlang::abort("Bad recipe (regression formula)")
-        } else if (length(recipe_list) == 2) {
-          self$terms <- all.vars(recipe_list[[2]])
-        } else {
-          self$terms <- all.vars(recipe_list[[3]])
-        }
-      }
-
+      all_vars = merge_vars(x, y, covars)
       data <- data.table::as.data.table(data)
       if (!all(all_vars %in% colnames(data))) {
         rlang::abort(glue("Column not available: {all_vars[!all_vars %in% colnames(data)]}"))
       }
       data <- data[, all_vars, with = FALSE]
 
-      self$recipe <- recipe
-      self$data <- data
-      self$args <- list(...)
-
-      self$model <- if (f == "coxph") {
-        .f(recipe, data = data, ...)
-      } else {
-        is_call <- length(all.vars(parse(text = f))) == 0L
-        if (is_call) {
-          # e.g., quasi(variance = "mu", link = "log")
-          f <- eval(parse(text = f))
-        }
-        .f(recipe, data = data, family = f, ...)
-      }
-      self$type <- class(self$model)
-      self$result <- parameters::model_parameters(
-        self$model,
-        exponentiate = exp, ci = ci
+      self$data = data
+      self$x = setdiff(x, y)
+      self$y = y
+      self$covars = covars
+    },
+    build = function(
+    f = c(
+      "coxph", "binomial", "gaussian",
+      "Gamma", "inverse.gaussian",
+      "poisson", "quasi", "quasibinomial",
+      "quasipoisson"
+    ),
+    exp = NULL, ci = 0.95,
+    ...) {
+      f <- f[1]
+      stopifnot(
+        is.character(f),
+        is.null(exp) || is.logical(exp)
       )
+
+      ml = list()
+      for (i in seq_along(self$x)) {
+        m = REGModel$new(
+          self$data,
+          recipe = list(x = unique(c(self$x[i], self$covars)),
+                        y = self$y),
+          f = f, exp = exp, ci = ci, ...
+        )
+        m$get_forest_data()
+        ml[[i]] = m
+      }
+      self$mlist = ml
+      self$type = ml[[1]]$type
+      self$result = data.table::rbindlist(
+        lapply(
+          seq_along(ml),
+          function(x) cbind(focal_term = self$x[x], ml[[x]]$result)),
+      )
+      colnames(self$result)[2:3] = c("variable", "estimate")
+      self$forest_data = data.table::rbindlist(
+        lapply(
+          seq_along(ml),
+          function(x) cbind(focal_term = self$x[x], ml[[x]]$forest_data)),
+      )
+      # Only keep focal term
+      self$forest_data = self$forest_data[focal_term == term_label]
     },
-    #' @description print the `REGModel` result with default plot methods from **parameters** package.
-    plot = function() {
-      plot(self$result)
+    plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
+      data <- self$forest_data
+      if (is.null(data)) {
+        message("Please run $build() before $plot_forest()")
+        return(NULL)
+      }
+      plot_forest(data, ref_line, xlim, ...)
     },
-    #' @description print the `REGModel` object
+    #' @description print the `REGModelList` object
     #' @param ... unused.
     print = function(...) {
-      cat("======================\nA <")
-      cat(cli::col_br_cyan("REGModel"))
-      cat("> object\n")
-      cat("======================\n")
-      print(self$result)
-      cat("======================\n")
+      cat(glue("<{cli::col_br_magenta('REGModelList')}>    =========="), "\n\n")
+      cat(glue("{cli::col_green('X')}(s): {paste(self$x, collapse = ', ')}"), "\n")
+      cat(glue("{cli::col_green('Y')}(s): {paste(self$y, collapse = ', ')}"), "\n")
+      cat(glue("covars: {paste(self$covars, collapse = ', ')}"), "\n")
+      if (is.null(self$result)) {
+        cat("\nNot build yet, run $build() method", "\n")
+      } else {
+        cat("----\n", glue("{cli::col_green('Result')}:"), "\n")
+        print(self$result)
+      }
+      cat(glue("[{cli::col_br_green(paste(self$type, collapse = '/'))}] model =========="))
     }
   ),
   private = list(),

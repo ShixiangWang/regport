@@ -123,16 +123,6 @@ REGModel <- R6::R6Class(
         is.null(exp) || is.logical(exp)
       )
 
-      if (f == "coxph") {
-        .f <- survival::coxph
-      } else {
-        .f <- stats::glm
-      }
-
-      get_vars <- function(text) {
-        all.vars(parse(text = text))
-      }
-
       if (is.list(recipe)) {
         if (!all(c("x", "y") %in% names(recipe))) {
           rlang::abort("If recipe is a list, 'x' and 'y' element must exist")
@@ -176,14 +166,14 @@ REGModel <- R6::R6Class(
       self$args <- list(...)
 
       self$model <- if (f == "coxph") {
-        .f(recipe, data = data, ...)
+        survival::coxph(recipe, data = data, ...)
       } else {
         is_call <- length(all.vars(parse(text = f))) == 0L
         if (is_call) {
           # e.g., quasi(variance = "mu", link = "log")
           f <- eval(parse(text = f))
         }
-        .f(recipe, data = data, family = f, ...)
+        stats::glm(recipe, data = data, family = f, ...)
       }
       self$type <- class(self$model)
       if (is.null(exp)) {
@@ -206,7 +196,6 @@ REGModel <- R6::R6Class(
         private$model_data,
         separate_factor, global_p
       )
-      self$forest_data
     },
     #' @description plot forest.
     #' @param ref_line reference line, default is `1` for HR.
@@ -216,45 +205,10 @@ REGModel <- R6::R6Class(
     plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
       data <- self$forest_data
       if (is.null(data)) {
-        message("Never call 'get_forest_data()' before, run with default options to get plotting data")
+        message("Never call '$get_forest_data()' before, run with default options to get plotting data")
         data <- self$get_forest_data()
       }
-      dt <- data[, c("variable", "level", "n")]
-      # Add blank column for the forest plot to display CI.
-      # Adjust the column width with space.
-      dt$` ` <- paste(rep(" ", 20), collapse = " ")
-      # Create confidence interval column to display
-      dt$`HR (95% CI)` <- data.table::fifelse(
-        data$reference, "Reference",
-        data.table::fifelse(
-          is.na(data$SE),
-          "",
-          sprintf(
-            "%.2f (%.2f to %.2f)",
-            data$estimate, data$CI_low, data$CI_high
-          )
-        )
-      )
-      dt$p <- ifelse(is.na(data$p), "", format.pval(data$p, digits = 2, eps = 1e-3))
-
-      for (i in seq_len(ncol(dt))) {
-        dt[[i]] <- ifelse(is.na(dt[[i]]), "", as.character(dt[[i]]))
-      }
-
-      data$estimate <- data.table::fifelse(data$reference, ref_line, data$estimate)
-      data$CI_low <- data.table::fifelse(data$reference, ref_line, data$CI_low)
-      data$CI_high <- data.table::fifelse(data$reference, ref_line, data$CI_high)
-
-      p <- forestploter::forest(dt,
-        est = data$estimate,
-        lower = data$CI_low,
-        upper = data$CI_high,
-        ci_column = 4,
-        ref_line = ref_line,
-        xlim = xlim,
-        ...
-      )
-      p
+      plot_forest(data, ref_line, xlim, ...)
     },
     #' @description print the `REGModel$result` with default plot methods from **see** package.
     plot = function() {
@@ -274,15 +228,43 @@ REGModel <- R6::R6Class(
   active = list()
 )
 
-remove_backticks <- function(x) {
-  gsub("^`|`$|\\\\(?=`)|`(?=:)|(?<=:)`", "", x, perl = TRUE)
-}
+plot_forest = function(data, ref_line = 1, xlim = c(0, 2), ...) {
+  dt <- data[, c("variable", "level", "n")]
+  # Add blank column for the forest plot to display CI.
+  # Adjust the column width with space.
+  dt$` ` <- paste(rep(" ", 20), collapse = " ")
+  # Create confidence interval column to display
+  dt$`Estimate (95% CI)` <- data.table::fifelse(
+    data$reference, "Reference",
+    data.table::fifelse(
+      is.na(data$SE),
+      "",
+      sprintf(
+        "%.2f (%.2f to %.2f)",
+        data$estimate, data$CI_low, data$CI_high
+      )
+    )
+  )
+  dt$p <- ifelse(is.na(data$p), "", format.pval(data$p, digits = 2, eps = 1e-3))
 
-notnull_or_na <- function(x) {
-  if (is.null(x)) NA_character_ else x
-}
-attr_notnull_or_na <- function(x, at = "label") {
-  notnull_or_na(attr(x, at, exact = TRUE))
+  for (i in seq_len(ncol(dt))) {
+    dt[[i]] <- ifelse(is.na(dt[[i]]), "", as.character(dt[[i]]))
+  }
+
+  data$estimate <- data.table::fifelse(data$reference, ref_line, data$estimate)
+  data$CI_low <- data.table::fifelse(data$reference, ref_line, data$CI_low)
+  data$CI_high <- data.table::fifelse(data$reference, ref_line, data$CI_high)
+
+  p <- forestploter::forest(dt,
+                            est = data$estimate,
+                            lower = data$CI_low,
+                            upper = data$CI_high,
+                            ci_column = 4,
+                            ref_line = ref_line,
+                            xlim = xlim,
+                            ...
+  )
+  p
 }
 
 # Adapted from forestmodel package
