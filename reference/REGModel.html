@@ -96,6 +96,8 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
 <ul><li><p><a href="#method-new"><code>REGModel$new()</code></a></p></li>
+<li><p><a href="#method-get_forest_data"><code>REGModel$get_forest_data()</code></a></p></li>
+<li><p><a href="#method-plot_forest"><code>REGModel$plot_forest()</code></a></p></li>
 <li><p><a href="#method-plot"><code>REGModel$plot()</code></a></p></li>
 <li><p><a href="#method-print"><code>REGModel$print()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-new"></a><div class="section">
@@ -108,7 +110,7 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
   <span class="va">...</span>,
   f <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coxph"</span>, <span class="st">"binomial"</span>, <span class="st">"gaussian"</span>, <span class="st">"Gamma"</span>, <span class="st">"inverse.gaussian"</span>, <span class="st">"poisson"</span>,
     <span class="st">"quasi"</span>, <span class="st">"quasibinomial"</span>, <span class="st">"quasipoisson"</span><span class="op">)</span>,
-  exp <span class="op">=</span> <span class="cn">TRUE</span>,
+  exp <span class="op">=</span> <span class="cn">NULL</span>,
   ci <span class="op">=</span> <span class="fl">0.95</span>
 <span class="op">)</span></code></pre></div><p></p></div>
 </div>
@@ -136,7 +138,7 @@ Other options are members of GLM family, see <code><a href="https://rdrr.io/r/st
 
 
 <dt><code>exp</code></dt>
-<dd><p>indicating whether or not to exponentiate the the coefficients.</p></dd>
+<dd><p>logical, indicating whether or not to exponentiate the the coefficients.</p></dd>
 
 
 <dt><code>ci</code></dt>
@@ -151,10 +153,55 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <p>a <code>REGModel</code> R6 object.</p>
 </div>
 
+</div><p></p><hr><a id="method-get_forest_data"></a><div class="section">
+<h3 id="method-get-forest-data-">Method <code>get_forest_data()</code><a class="anchor" aria-label="anchor" href="#method-get-forest-data-"></a></h3>
+<p>get tidy data for plotting forest.</p><div class="section">
+<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">get_forest_data</span><span class="op">(</span>separate_factor <span class="op">=</span> <span class="cn">FALSE</span>, global_p <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>separate_factor</code></dt>
+<dd><p>separate factor/class as a blank row.</p></dd>
+
+
+<dt><code>global_p</code></dt>
+<dd><p>if <code>TRUE</code>, return global p value.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-plot_forest"></a><div class="section">
+<h3 id="method-plot-forest-">Method <code>plot_forest()</code><a class="anchor" aria-label="anchor" href="#method-plot-forest-"></a></h3>
+<p>plot forest.</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="fl">1</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>ref_line</code></dt>
+<dd><p>reference line, default is <code>1</code> for HR.</p></dd>
+
+
+<dt><code>xlim</code></dt>
+<dd><p>limits of x axis.</p></dd>
+
+
+<dt><code>...</code></dt>
+<dd><p>other plot options passing to <code><a href="https://rdrr.io/pkg/forestploter/man/forest.html" class="external-link">forestploter::forest()</a></code>.
+Also check <a href="https://github.com/adayim/forestploter" class="external-link">https://github.com/adayim/forestploter</a> to see more complex adjustment of the result plot.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-plot"></a><div class="section">
 <h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
-<p>print the <code>REGModel</code> result with default plot methods from <strong>parameters</strong> package.</p><div class="section">
-<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
+<p>print the <code>REGModel$result</code> with default plot methods from <strong>see</strong> package.</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
@@ -162,12 +209,12 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 </div><p></p><hr><a id="method-print"></a><div class="section">
 <h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
 <p>print the <code>REGModel</code> object</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>unused.</p></dd>
 
@@ -202,16 +249,15 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method                         from      </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   format.parameters_distribution datawizard</span>
 <span class="r-in"><span class="va">mm</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A &lt;<span style="color: #55FFFF;">REGModel</span>&gt; object</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;<span style="color: #FF55FF;">REGModel</span>&gt;    ========== </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Parameter | Coefficient |   SE |        95% CI |    z |     p</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------------------------------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> x         |        2.23 | 1.83 | [0.45, 11.18] | 0.98 | 0.329</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Wald z-distribution approximation.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [<span style="color: #55FF55;">coxph</span>] model ==========</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">mm</span><span class="op">$</span><span class="va">result</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Parameter Coefficient      SE   CI    CI_low  CI_high         z df_error</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         x    2.230706 1.83448 0.95 0.4450758 11.18022 0.9756088      Inf</span>
@@ -227,16 +273,15 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"><span class="va">mm2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A &lt;<span style="color: #55FFFF;">REGModel</span>&gt; object</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;<span style="color: #FF55FF;">REGModel</span>&gt;    ========== </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Parameter | Coefficient |   SE |        95% CI |    z |     p</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -------------------------------------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> x         |        2.23 | 1.83 | [0.45, 11.18] | 0.98 | 0.329</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Wald z-distribution approximation.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ======================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [<span style="color: #55FF55;">coxph</span>] model ==========</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Add other parameters, e.g., weights</span></span>
 <span class="r-in"><span class="co"># For more, see ?coxph</span></span>
@@ -252,7 +297,6 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <span class="r-out co"><span class="r-pr">#&gt;</span> $weights</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 1 1 2 2 2 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
