@@ -62,7 +62,7 @@ test_that("Function REGModel() @ L73", {
   )
   mm
   mm$get_forest_data()
-  mm$plot_forest(xlim = c(-1, 3))
+  mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
   expect_is(mm, "REGModel")
   expect_is(mm2, "REGModel")
   expect_is(mm3, "REGModel")

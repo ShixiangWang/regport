@@ -67,7 +67,7 @@ mm <- REGModel$new(
 )
 mm
 mm$get_forest_data()
-mm$plot_forest(xlim = c(-1, 3))
+mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -86,6 +86,8 @@ mm$plot_forest(xlim = c(-1, 3))
 
 \item{\code{result}}{model result, a object of \code{parameters_model}. Can be converted into
 data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.}
+
+\item{\code{forest_data}}{more detailed data used for plotting forest.}
 }
 \if{html}{\out{</div>}}
 }

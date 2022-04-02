@@ -65,7 +65,7 @@
 #' )
 #' mm
 #' mm$get_forest_data()
-#' mm$plot_forest(xlim = c(-1, 3))
+#' mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
@@ -85,6 +85,7 @@ REGModel <- R6::R6Class(
     #' @field type model type (class).
     #' @field result model result, a object of `parameters_model`. Can be converted into
     #' data.frame with [as.data.frame()] or [data.table::as.data.table()].
+    #' @field forest_data more detailed data used for plotting forest.
     data = NULL,
     recipe = NULL,
     terms = NULL,
@@ -92,6 +93,7 @@ REGModel <- R6::R6Class(
     model = NULL,
     type = NULL,
     result = NULL,
+    forest_data = NULL,
     #' @description Build a `REGModel` object.
     #' @param data a `data.table` storing modeling data.
     #' @param recipe an R `formula` or a list with two elements 'x' and 'y',
@@ -198,13 +200,13 @@ REGModel <- R6::R6Class(
     #' @param separate_factor separate factor/class as a blank row.
     #' @param global_p if `TRUE`, return global p value.
     get_forest_data = function(separate_factor = FALSE, global_p = FALSE) {
-      private$forest_data <- make_forest_terms(
+      self$forest_data <- make_forest_terms(
         self$model,
         as.data.frame(self$result),
         private$model_data,
         separate_factor, global_p
       )
-      private$forest_data
+      self$forest_data
     },
     #' @description plot forest.
     #' @param ref_line reference line, default is `1` for HR.
@@ -212,7 +214,7 @@ REGModel <- R6::R6Class(
     #' @param ... other plot options passing to [forestploter::forest()].
     #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
     plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
-      data <- private$forest_data
+      data <- self$forest_data
       if (is.null(data)) {
         message("Never call 'get_forest_data()' before, run with default options to get plotting data")
         data <- self$get_forest_data()
@@ -267,7 +269,6 @@ REGModel <- R6::R6Class(
     }
   ),
   private = list(
-    forest_data = NULL,
     model_data = NULL
   ),
   active = list()
@@ -300,16 +301,6 @@ make_forest_terms <- function(model, tidy_model, data,
       class = attr(model$terms, "dataClasses")[-1]
     ),
     by = "variable", all.x = FALSE, all.y = FALSE
-  )
-
-  forest_labels <- data.table::data.table(
-    variable = names(data)
-  )
-  forest_labels$label <- data.table::fcoalesce(
-    vapply(
-      data, attr_notnull_or_na, character(1)
-    ),
-    forest_labels$variable
   )
 
   # TODO:交互项的处理
@@ -367,13 +358,6 @@ make_forest_terms <- function(model, tidy_model, data,
     ) %>%
     dplyr::mutate(
       variable = ifelse(is.na(level_no) | (level_no == 1 & !separate_factor), variable, NA)
-    ) %>%
-    dplyr::left_join(
-      forest_labels,
-      by = "variable"
-    ) %>%
-    dplyr::mutate(
-      variable = dplyr::coalesce(label, variable)
     ) %>%
     dplyr::select(c("variable", "term"), dplyr::everything())
 
