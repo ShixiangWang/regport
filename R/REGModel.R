@@ -48,7 +48,6 @@
 #'   weights = c(1, 1, 1, 2, 2, 2, 3)
 #' )
 #' mm3$args
-#'
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
@@ -84,7 +83,7 @@ REGModel <- R6::R6Class(
     #' Other options are members of GLM family, see [stats::family()].
     #' 'binomial' is logistic, and 'gaussian' is linear.
     #' @param ... other parameters passing to corresponding regression model function.
-    #' @param exp indicating whether or not to exponentiate the the coefficients.
+    #' @param exp logical, indicating whether or not to exponentiate the the coefficients.
     #' @param ci confidence Interval (CI) level. Default to 0.95 (95%).
     #' e.g. [survival::coxph()].
     #' @return a `REGModel` R6 object.
@@ -95,12 +94,13 @@ REGModel <- R6::R6Class(
                             "poisson", "quasi", "quasibinomial",
                             "quasipoisson"
                           ),
-                          exp = TRUE, ci = 0.95) {
+                          exp = NULL, ci = 0.95) {
       f <- f[1]
       stopifnot(
         is.data.frame(data),
         rlang::is_formula(recipe) | is.list(recipe),
-        length(f) == 1 & is.character(f)
+        length(f) == 1 & is.character(f),
+        is.null(exp) || is.logical(exp)
       )
 
       if (f == "coxph") {
@@ -125,9 +125,10 @@ REGModel <- R6::R6Class(
         all_vars <- c(x_vars, y_vars)
         # Update recipe to a formula
         recipe <- if (f == "coxph") {
-          if (length(y) < 2)
+          if (length(y) < 2) {
             rlang::warn("time and status for Surv object are not here, maybe a bad input of 'y' element in 'recipe'")
-          glue("Surv({paste(y, collapse = ', ')}) ~ {paste(unique(x), collapse = ' + ')}")
+          }
+          glue("survival::Surv({paste(y, collapse = ', ')}) ~ {paste(unique(x), collapse = ' + ')}")
         } else {
           glue("{paste(y, collapse = ' + ')} ~ {paste(unique(x), collapse = ' + ')}")
         }
@@ -165,26 +166,203 @@ REGModel <- R6::R6Class(
         .f(recipe, data = data, family = f, ...)
       }
       self$type <- class(self$model)
+      if (is.null(exp)) {
+        exp <- inherits(self$model, "coxph") ||
+          (inherits(self$model, "glm") && self$model$family$link == "logit")
+      }
       self$result <- parameters::model_parameters(
         self$model,
         exponentiate = exp, ci = ci
       )
     },
-    #' @description print the `REGModel` result with default plot methods from **parameters** package.
+    #' @description get tidy data for plotting forest.
+    #' @param separate_factor separate factor/class as a blank row.
+    #' @param global_p if `TRUE`, return global p value.
+    get_forest_data = function(separate_factor = FALSE, global_p = FALSE) {
+      private$forest_data <- make_forest_terms(self$model, as.data.frame(self$result), separate_factor, global_p)
+      private$forest_data
+    },
+    #' @description plot forest.
+    #' @param ref_line reference line, default is `1` for HR.
+    #' @param xlim limits of x axis.
+    #' @param ... other plot options passing to [forestploter::forest()].
+    #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
+    plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
+      data <- private$forest_data
+      if (is.null(data)) {
+        message("Never call 'get_forest_data()' before, run with default options to get plotting data")
+        data <- self$get_forest_data()
+      }
+      dt <- data[, c("variable", "level", "n")]
+      # Add blank column for the forest plot to display CI.
+      # Adjust the column width with space.
+      dt$` ` <- paste(rep(" ", 20), collapse = " ")
+      # Create confidence interval column to display
+      dt$`HR (95% CI)` <- data.table::fifelse(
+        data$reference, "Reference",
+        data.table::fifelse(
+          is.na(data$SE),
+          "",
+          sprintf(
+            "%.2f (%.2f to %.2f)",
+            data$estimate, data$CI_low, data$CI_high
+          )
+        )
+      )
+      dt$p <- ifelse(is.na(data$p), "", format.pval(data$p, digits = 2, eps = 1e-3))
+
+      for (i in seq_len(ncol(dt))) {
+        dt[[i]] <- ifelse(is.na(dt[[i]]), "", as.character(dt[[i]]))
+      }
+
+      data$estimate <- data.table::fifelse(data$reference, ref_line, data$estimate)
+      data$CI_low <- data.table::fifelse(data$reference, ref_line, data$CI_low)
+      data$CI_high <- data.table::fifelse(data$reference, ref_line, data$CI_high)
+
+      p <- forestploter::forest(dt,
+        est = data$estimate,
+        lower = data$CI_low,
+        upper = data$CI_high,
+        ci_column = 4,
+        ref_line = ref_line,
+        xlim = xlim,
+        ...
+      )
+      p
+    },
+    #' @description print the `REGModel$result` with default plot methods from **see** package.
     plot = function() {
       plot(self$result)
     },
     #' @description print the `REGModel` object
     #' @param ... unused.
     print = function(...) {
-      cat("======================\nA <")
-      cat(cli::col_br_cyan("REGModel"))
-      cat("> object\n")
-      cat("======================\n")
+      cat(glue("<{cli::col_br_magenta('REGModel')}>    =========="), "\n\n")
       print(self$result)
-      cat("======================\n")
+      cat(glue("[{cli::col_br_green(self$type)}] model =========="))
     }
   ),
-  private = list(),
+  private = list(
+    forest_data = NULL
+  ),
   active = list()
 )
+
+remove_backticks <- function(x) {
+  gsub("^`|`$|\\\\(?=`)|`(?=:)|(?<=:)`", "", x, perl = TRUE)
+}
+
+notnull_or_na <- function(x) {
+  if (is.null(x)) NA_character_ else x
+}
+attr_notnull_or_na <- function(x, at = "label") {
+  notnull_or_na(attr(x, at, exact = TRUE))
+}
+
+# Adapted from forestmodel package
+make_forest_terms <- function(model, tidy_model,
+                              separate_factor = FALSE,
+                              global_p = FALSE) {
+  # tidy_model <- broom::tidy(model, conf.int = TRUE)
+  colnames(tidy_model)[1:2] <- c("term", "estimate")
+  data <- stats::model.frame(model, data = get("self", rlang::caller_env())$data)
+
+  forest_terms <- merge(
+    data.table::data.table(
+      term_label = attr(model$terms, "term.labels")
+    )[, variable := remove_backticks(term_label)],
+    data.table::data.table(
+      variable = names(attr(model$terms, "dataClasses"))[-1],
+      class = attr(model$terms, "dataClasses")[-1]
+    ),
+    by = "variable", all.x = FALSE, all.y = FALSE
+  )
+
+  forest_labels <- data.table::data.table(
+    variable = names(data)
+  )
+  forest_labels$label <- data.table::fcoalesce(
+    vapply(
+      data, attr_notnull_or_na, character(1)
+    ),
+    forest_labels$variable
+  )
+
+  # TODO:交互项的处理
+  create_term_data <- function(term_row) {
+    if (!is.na(term_row$class)) {
+      var <- term_row$variable
+      if (term_row$class %in% c("factor", "character")) {
+        tab <- table(data[, var])
+        if (!any(paste0(term_row$term_label, names(tab)) %in% tidy_model$term)) {
+          # Filter out terms not in final model summary (e.g. strata)
+          out <- data.frame(variable = NA, stringsAsFactors = FALSE)
+        } else {
+          out <- data.frame(
+            term_row,
+            level = names(tab),
+            level_no = 1:length(tab),
+            n = as.integer(tab),
+            stringsAsFactors = FALSE
+          )
+          if (separate_factor) {
+            out <- dplyr::bind_rows(as.data.frame(term_row, stringsAsFactors = FALSE), out)
+          }
+        }
+      } else {
+        out <- data.frame(term_row,
+          level = NA, level_no = NA,
+          n = sum(!is.na(data[, var])),
+          stringsAsFactors = FALSE
+        )
+        if (term_row$class == "logical") {
+          out$term_label <- paste0(term_row$term_label, "TRUE")
+        }
+      }
+    } else {
+      out <- data.frame(
+        term_row,
+        level = NA, level_no = NA, n = NA,
+        stringsAsFactors = FALSE
+      )
+    }
+    out
+  }
+
+  forest_terms <- forest_terms %>%
+    dplyr::rowwise() %>%
+    dplyr::do(create_term_data(.)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(variable)) %>%
+    dplyr::mutate(term = paste0(term_label, replace(level, is.na(level), ""))) %>%
+    dplyr::left_join(tidy_model, by = "term") %>%
+    dplyr::mutate(
+      reference = ifelse(is.na(level_no), FALSE, level_no == 1),
+      estimate = ifelse(reference, 0, estimate),
+      variable = ifelse(is.na(variable), remove_backticks(term), variable)
+    ) %>%
+    dplyr::mutate(
+      variable = ifelse(is.na(level_no) | (level_no == 1 & !separate_factor), variable, NA)
+    ) %>%
+    dplyr::left_join(
+      forest_labels,
+      by = "variable"
+    ) %>%
+    dplyr::mutate(
+      variable = dplyr::coalesce(label, variable)
+    ) %>%
+    dplyr::select(c("variable", "term"), dplyr::everything())
+
+  if (global_p) {
+    if (inherits(model, "coxph")) {
+      p_val <- as.numeric(summary(model)$sctest[3])
+    } else {
+      # TODO
+    }
+    label <- paste("Global p ", format.pval(p_val, digits = 2, eps = 1e-3))
+    forest_terms <- forest_terms %>%
+      dplyr::add_row(term_label = "Global p", variable = label)
+  }
+
+  data.table::as.data.table(forest_terms)
+}

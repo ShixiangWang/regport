@@ -2,7 +2,7 @@
 
 # File R/REGModel.R: @testexamples
 
-test_that("Function REGModel() @ L56", {
+test_that("Function REGModel() @ L55", {
   
   library(survival)
   test1 <- data.frame(
@@ -45,7 +45,6 @@ test_that("Function REGModel() @ L56", {
     weights = c(1, 1, 1, 2, 2, 2, 3)
   )
   mm3$args
-  
   expect_is(mm, "REGModel")
   expect_is(mm2, "REGModel")
   expect_is(mm3, "REGModel")

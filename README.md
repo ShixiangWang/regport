@@ -6,44 +6,102 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of regport is to …
+The goal of regport is to provides R6 classes, methods and utilities to
+construct, analyze, summarize, and visualize regression models (CoxPH
+and GLMs).
 
 ## Installation
 
 You can install the development version of regport like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+remotes::install_github("ShixiangWang/regport")
 ```
 
-## Example
+## Simple case
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to build and visualize a Cox
+model.
+
+Prepare data:
 
 ``` r
 library(regport)
-## basic example code
+library(survival)
+
+lung = survival::lung
+lung$sex = factor(lung$sex)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+Create a model:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+model = REGModel$new(
+  lung,
+  recipe = list(
+    x = c("age", "sex"),
+    y = c("time", "status")
+  )
+)
+#> Registered S3 method overwritten by 'parameters':
+#>   method                         from      
+#>   format.parameters_distribution datawizard
+
+model
+#> <REGModel>    ========== 
+#> 
+#> Parameter | Coefficient |       SE |       95% CI |     z |     p
+#> -----------------------------------------------------------------
+#> age       |        1.02 | 9.38e-03 | [1.00, 1.04] |  1.85 | 0.065
+#> sex [2]   |        0.60 |     0.10 | [0.43, 0.83] | -3.06 | 0.002
+#> 
+#> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a
+#>   Wald z-distribution approximation.
+#> [coxph] model ==========
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
+You can also create it with formula:
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+``` r
+model = REGModel$new(
+  lung,
+  recipe = Surv(time, status) ~ age + sex
+)
+
+model
+#> <REGModel>    ========== 
+#> 
+#> Parameter | Coefficient |       SE |       95% CI |     z |     p
+#> -----------------------------------------------------------------
+#> age       |        1.02 | 9.38e-03 | [1.00, 1.04] |  1.85 | 0.065
+#> sex2      |        0.60 |     0.10 | [0.43, 0.83] | -3.06 | 0.002
+#> 
+#> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a
+#>   Wald z-distribution approximation.
+#> [coxph] model ==========
+```
+
+Visualize it:
+
+``` r
+model$plot()
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+Visualize with more nice forest plot.
+
+``` r
+model$get_forest_data()
+#>    variable term term_label   class level level_no   n estimate          SE
+#> 1:      age  age        age numeric  <NA>       NA 228 1.017191 0.009381835
+#> 2:      sex sex1        sex  factor     1        1 138 0.000000          NA
+#> 3:     <NA> sex2        sex  factor     2        2  90 0.598566 0.100234639
+#>      CI    CI_low   CI_high         z df_error           p reference label
+#> 1: 0.95 0.9989686 1.0357467  1.848078      Inf 0.064591012     FALSE   age
+#> 2:   NA        NA        NA        NA       NA          NA      TRUE   sex
+#> 3: 0.95 0.4310936 0.8310985 -3.064760      Inf 0.002178445     FALSE  <NA>
+model$plot_forest()
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
