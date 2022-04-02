@@ -23,7 +23,7 @@ test1 <- data.frame(
 
 # way 1:
 mm <- REGModel$new(
-  as.data.frame(test1),
+  test1,
   Surv(time, status) ~ x + strata(sex)
 )
 mm
@@ -31,13 +31,25 @@ as.data.frame(mm$result)
 
 # way 2:
 mm2 <- REGModel$new(
-  as.data.frame(test1),
+  test1,
   recipe = list(
     x = c("x", "strata(sex)"),
     y = c("time", "status")
   )
 )
 mm2
+
+# Add other parameters, e.g., weights
+# For more, see ?coxph
+mm3 <- REGModel$new(
+  test1,
+  recipe = list(
+    x = c("x", "strata(sex)"),
+    y = c("time", "status")
+  ),
+  weights = c(1, 1, 1, 2, 2, 2, 3)
+)
+mm3$args
 
 }
 \section{Public fields}{
@@ -96,7 +108,7 @@ operation.}
 
 \item{\code{...}}{other parameters passing to corresponding regression model function.}
 
-\item{\code{f}}{a length-1 string specifying modeling function, default is 'coxph'.
+\item{\code{f}}{a length-1 string specifying modeling function or family of \code{\link[=glm]{glm()}}, default is 'coxph'.
 Other options are members of GLM family, see \code{\link[stats:family]{stats::family()}}.
 'binomial' is logistic, and 'gaussian' is linear.}
 

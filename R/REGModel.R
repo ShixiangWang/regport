@@ -21,7 +21,7 @@
 #'
 #' # way 1:
 #' mm <- REGModel$new(
-#'   as.data.frame(test1),
+#'   test1,
 #'   Surv(time, status) ~ x + strata(sex)
 #' )
 #' mm
@@ -29,7 +29,7 @@
 #'
 #' # way 2:
 #' mm2 <- REGModel$new(
-#'   as.data.frame(test1),
+#'   test1,
 #'   recipe = list(
 #'     x = c("x", "strata(sex)"),
 #'     y = c("time", "status")
@@ -37,9 +37,22 @@
 #' )
 #' mm2
 #'
+#' # Add other parameters, e.g., weights
+#' # For more, see ?coxph
+#' mm3 <- REGModel$new(
+#'   test1,
+#'   recipe = list(
+#'     x = c("x", "strata(sex)"),
+#'     y = c("time", "status")
+#'   ),
+#'   weights = c(1, 1, 1, 2, 2, 2, 3)
+#' )
+#' mm3$args
+#'
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
+#' expect_is(mm3, "REGModel")
 REGModel <- R6::R6Class(
   "REGModel",
   inherit = NULL,
@@ -67,7 +80,7 @@ REGModel <- R6::R6Class(
     #' @param recipe an R `formula` or a list with two elements 'x' and 'y',
     #' where 'x' is for covariables and 'y' is for label. See example for detail
     #' operation.
-    #' @param f a length-1 string specifying modeling function, default is 'coxph'.
+    #' @param f a length-1 string specifying modeling function or family of [glm()], default is 'coxph'.
     #' Other options are members of GLM family, see [stats::family()].
     #' 'binomial' is logistic, and 'gaussian' is linear.
     #' @param ... other parameters passing to corresponding regression model function.

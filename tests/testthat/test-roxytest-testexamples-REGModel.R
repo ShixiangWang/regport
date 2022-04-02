@@ -2,7 +2,7 @@
 
 # File R/REGModel.R: @testexamples
 
-test_that("Function REGModel() @ L43", {
+test_that("Function REGModel() @ L56", {
   
   library(survival)
   test1 <- data.frame(
@@ -18,7 +18,7 @@ test_that("Function REGModel() @ L43", {
   
   # way 1:
   mm <- REGModel$new(
-    as.data.frame(test1),
+    test1,
     Surv(time, status) ~ x + strata(sex)
   )
   mm
@@ -26,7 +26,7 @@ test_that("Function REGModel() @ L43", {
   
   # way 2:
   mm2 <- REGModel$new(
-    as.data.frame(test1),
+    test1,
     recipe = list(
       x = c("x", "strata(sex)"),
       y = c("time", "status")
@@ -34,7 +34,20 @@ test_that("Function REGModel() @ L43", {
   )
   mm2
   
+  # Add other parameters, e.g., weights
+  # For more, see ?coxph
+  mm3 <- REGModel$new(
+    test1,
+    recipe = list(
+      x = c("x", "strata(sex)"),
+      y = c("time", "status")
+    ),
+    weights = c(1, 1, 1, 2, 2, 2, 3)
+  )
+  mm3$args
+  
   expect_is(mm, "REGModel")
   expect_is(mm2, "REGModel")
+  expect_is(mm3, "REGModel")
 })
 
