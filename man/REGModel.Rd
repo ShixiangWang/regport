@@ -50,6 +50,24 @@ mm3 <- REGModel$new(
   weights = c(1, 1, 1, 2, 2, 2, 3)
 )
 mm3$args
+
+# ----------------------
+# Another type of model
+# ----------------------
+library(stats)
+counts <- c(18, 17, 15, 20, 10, 20, 25, 13, 12)
+outcome <- gl(3, 1, 9)
+treatment <- gl(3, 3)
+data <- data.frame(treatment, outcome, counts)
+
+mm <- REGModel$new(
+  data,
+  counts ~ outcome + treatment,
+  f = "poisson"
+)
+mm
+mm$get_forest_data()
+mm$plot_forest(xlim = c(-1, 3))
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

@@ -48,6 +48,24 @@
 #'   weights = c(1, 1, 1, 2, 2, 2, 3)
 #' )
 #' mm3$args
+#'
+#' # ----------------------
+#' # Another type of model
+#' # ----------------------
+#' library(stats)
+#' counts <- c(18, 17, 15, 20, 10, 20, 25, 13, 12)
+#' outcome <- gl(3, 1, 9)
+#' treatment <- gl(3, 3)
+#' data <- data.frame(treatment, outcome, counts)
+#'
+#' mm <- REGModel$new(
+#'   data,
+#'   counts ~ outcome + treatment,
+#'   f = "poisson"
+#' )
+#' mm
+#' mm$get_forest_data()
+#' mm$plot_forest(xlim = c(-1, 3))
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
@@ -174,12 +192,18 @@ REGModel <- R6::R6Class(
         self$model,
         exponentiate = exp, ci = ci
       )
+      private$model_data <- broom.helpers::model_get_model_frame(self$model)
     },
     #' @description get tidy data for plotting forest.
     #' @param separate_factor separate factor/class as a blank row.
     #' @param global_p if `TRUE`, return global p value.
     get_forest_data = function(separate_factor = FALSE, global_p = FALSE) {
-      private$forest_data <- make_forest_terms(self$model, as.data.frame(self$result), separate_factor, global_p)
+      private$forest_data <- make_forest_terms(
+        self$model,
+        as.data.frame(self$result),
+        private$model_data,
+        separate_factor, global_p
+      )
       private$forest_data
     },
     #' @description plot forest.
@@ -239,11 +263,12 @@ REGModel <- R6::R6Class(
     print = function(...) {
       cat(glue("<{cli::col_br_magenta('REGModel')}>    =========="), "\n\n")
       print(self$result)
-      cat(glue("[{cli::col_br_green(self$type)}] model =========="))
+      cat(glue("[{cli::col_br_green(paste(self$type, collapse = '/'))}] model =========="))
     }
   ),
   private = list(
-    forest_data = NULL
+    forest_data = NULL,
+    model_data = NULL
   ),
   active = list()
 )
@@ -260,12 +285,11 @@ attr_notnull_or_na <- function(x, at = "label") {
 }
 
 # Adapted from forestmodel package
-make_forest_terms <- function(model, tidy_model,
+make_forest_terms <- function(model, tidy_model, data,
                               separate_factor = FALSE,
                               global_p = FALSE) {
   # tidy_model <- broom::tidy(model, conf.int = TRUE)
   colnames(tidy_model)[1:2] <- c("term", "estimate")
-  data <- stats::model.frame(model, data = get("self", rlang::caller_env())$data)
 
   forest_terms <- merge(
     data.table::data.table(
@@ -356,12 +380,12 @@ make_forest_terms <- function(model, tidy_model,
   if (global_p) {
     if (inherits(model, "coxph")) {
       p_val <- as.numeric(summary(model)$sctest[3])
+      label <- paste("Global p ", format.pval(p_val, digits = 2, eps = 1e-3))
+      forest_terms <- forest_terms %>%
+        dplyr::add_row(term_label = "Global p", variable = label)
     } else {
-      # TODO
+      message("No global p value availabe for non-Cox model")
     }
-    label <- paste("Global p ", format.pval(p_val, digits = 2, eps = 1e-3))
-    forest_terms <- forest_terms %>%
-      dplyr::add_row(term_label = "Global p", variable = label)
   }
 
   data.table::as.data.table(forest_terms)

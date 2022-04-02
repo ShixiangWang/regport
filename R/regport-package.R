@@ -18,7 +18,9 @@
 NULL
 
 utils::globalVariables(
-  c("estimate", "level", "level_no",
+  c(
+    "estimate", "level", "level_no",
     "reference", "term", "term_label",
-    "variable", ".")
+    "variable", "."
+  )
 )
