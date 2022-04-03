@@ -14,7 +14,7 @@ Currently, this class is designed for CoxPH and GLM regression models."><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,20 +62,24 @@ Currently, this class is designed for CoxPH and GLM regression models.</p>
 <dd><p>a <code>data.table</code> storing modeling data.</p></dd>
 
 
-<dt><code>recipe</code></dt>
-<dd><p>an R <code>formula</code> storing model formula.</p></dd>
+<dt><code>x</code></dt>
+<dd><p>focal variables (terms).</p></dd>
 
 
-<dt><code>terms</code></dt>
-<dd><p>all terms (covariables, i.e. columns) used for building model.</p></dd>
+<dt><code>y</code></dt>
+<dd><p>predicted variables or expression.</p></dd>
+
+
+<dt><code>covars</code></dt>
+<dd><p>covariables.</p></dd>
+
+
+<dt><code>mlist</code></dt>
+<dd><p>a list of <code>REGModel</code>.</p></dd>
 
 
 <dt><code>args</code></dt>
 <dd><p>other arguments used for building model.</p></dd>
-
-
-<dt><code>model</code></dt>
-<dd><p>a constructed model.</p></dd>
 
 
 <dt><code>type</code></dt>
@@ -87,6 +91,10 @@ Currently, this class is designed for CoxPH and GLM regression models.</p>
 data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> or <code><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.</p></dd>
 
 
+<dt><code>forest_data</code></dt>
+<dd><p>more detailed data used for plotting forest.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -96,21 +104,14 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
 <ul><li><p><a href="#method-new"><code>REGModelList$new()</code></a></p></li>
-<li><p><a href="#method-plot"><code>REGModelList$plot()</code></a></p></li>
+<li><p><a href="#method-build"><code>REGModelList$build()</code></a></p></li>
+<li><p><a href="#method-plot_forest"><code>REGModelList$plot_forest()</code></a></p></li>
 <li><p><a href="#method-print"><code>REGModelList$print()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
-<p>Build a <code>REGModel</code> object.</p><div class="section">
+<p>Create a <code>REGModelList</code> object.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/REGModelList.html">REGModelList</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">recipe</span>,
-  <span class="va">...</span>,
-  f <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coxph"</span>, <span class="st">"binomial"</span>, <span class="st">"gaussian"</span>, <span class="st">"Gamma"</span>, <span class="st">"inverse.gaussian"</span>, <span class="st">"poisson"</span>,
-    <span class="st">"quasi"</span>, <span class="st">"quasibinomial"</span>, <span class="st">"quasipoisson"</span><span class="op">)</span>,
-  exp <span class="op">=</span> <span class="cn">TRUE</span>,
-  ci <span class="op">=</span> <span class="fl">0.95</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/REGModelList.html">REGModelList</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">data</span>, <span class="va">y</span>, <span class="va">x</span>, covars <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -119,24 +120,48 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
 <dd><p>a <code>data.table</code> storing modeling data.</p></dd>
 
 
-<dt><code>recipe</code></dt>
-<dd><p>an R <code>formula</code> or a list with two elements 'x' and 'y',
-where 'x' is for covariables and 'y' is for label. See example for detail
-operation.</p></dd>
+<dt><code>y</code></dt>
+<dd><p>predicted variables or expression.</p></dd>
 
 
-<dt><code>...</code></dt>
-<dd><p>other parameters passing to corresponding regression model function.</p></dd>
+<dt><code>x</code></dt>
+<dd><p>focal variables (terms).</p></dd>
 
 
-<dt><code>f</code></dt>
+<dt><code>covars</code></dt>
+<dd><p>covariables.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<p>a <code>REGModelList</code> R6 object.</p>
+</div>
+
+</div><p></p><hr><a id="method-build"></a><div class="section">
+<h3 id="method-build-">Method <code><a href="https://rdrr.io/r/utils/PkgUtils.html" class="external-link">build()</a></code><a class="anchor" aria-label="anchor" href="#method-build-"></a></h3>
+<p>Build <code>REGModelList</code> object.</p><div class="section">
+<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">build</span><span class="op">(</span>
+  f <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"coxph"</span>, <span class="st">"binomial"</span>, <span class="st">"gaussian"</span>, <span class="st">"Gamma"</span>, <span class="st">"inverse.gaussian"</span>, <span class="st">"poisson"</span>,
+    <span class="st">"quasi"</span>, <span class="st">"quasibinomial"</span>, <span class="st">"quasipoisson"</span><span class="op">)</span>,
+  exp <span class="op">=</span> <span class="cn">NULL</span>,
+  ci <span class="op">=</span> <span class="fl">0.95</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>f</code></dt>
 <dd><p>a length-1 string specifying modeling function or family of <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code>, default is 'coxph'.
 Other options are members of GLM family, see <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::family()</a></code>.
 'binomial' is logistic, and 'gaussian' is linear.</p></dd>
 
 
 <dt><code>exp</code></dt>
-<dd><p>indicating whether or not to exponentiate the the coefficients.</p></dd>
+<dd><p>logical, indicating whether or not to exponentiate the the coefficients.</p></dd>
 
 
 <dt><code>ci</code></dt>
@@ -144,30 +169,51 @@ Other options are members of GLM family, see <code><a href="https://rdrr.io/r/st
 e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">survival::coxph()</a></code>.</p></dd>
 
 
+<dt><code>...</code></dt>
+<dd><p>other parameters passing to corresponding regression model function.</p></dd>
+
+
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
+<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>a <code>REGModel</code> R6 object.</p>
 </div>
 
-</div><p></p><hr><a id="method-plot"></a><div class="section">
-<h3 id="method-plot-">Method <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code><a class="anchor" aria-label="anchor" href="#method-plot-"></a></h3>
-<p>print the <code>REGModel</code> result with default plot methods from <strong>parameters</strong> package.</p><div class="section">
-<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+</div><p></p><hr><a id="method-plot_forest"></a><div class="section">
+<h3 id="method-plot-forest-">Method <code>plot_forest()</code><a class="anchor" aria-label="anchor" href="#method-plot-forest-"></a></h3>
+<p>plot forest.</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="fl">1</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
+<div class="section">
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>ref_line</code></dt>
+<dd><p>reference line, default is <code>1</code> for HR.</p></dd>
+
+
+<dt><code>xlim</code></dt>
+<dd><p>limits of x axis.</p></dd>
+
+
+<dt><code>...</code></dt>
+<dd><p>other plot options passing to <code><a href="https://rdrr.io/pkg/forestploter/man/forest.html" class="external-link">forestploter::forest()</a></code>.
+Also check <a href="https://github.com/adayim/forestploter" class="external-link">https://github.com/adayim/forestploter</a> to see more complex adjustment of the result plot.</p></dd>
+
+
+</dl><p></p></div>
+</div>
 
 </div><p></p><hr><a id="method-print"></a><div class="section">
 <h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
-<p>print the <code>REGModel</code> object</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
+<p>print the <code>REGModelList</code> object</p><div class="section">
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>unused.</p></dd>
 
@@ -181,13 +227,102 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">test1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span class="r-in">  time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span class="r-in">  status <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span class="r-in">  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span class="r-in">  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">ml</span> <span class="op">&lt;-</span> <span class="va">REGModelList</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span class="r-in">  data <span class="op">=</span> <span class="va">mtcars</span>,</span>
+<span class="r-in">  y <span class="op">=</span> <span class="st">"mpg"</span>,</span>
+<span class="r-in">  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"factor(cyl)"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>,</span>
+<span class="r-in">  covars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">[</span><span class="fl">8</span><span class="op">:</span><span class="fl">9</span><span class="op">]</span>, <span class="st">"factor(gear)"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
+<span class="r-in"><span class="va">ml</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;<span style="color: #FF55FF;">REGModelList</span>&gt;    ========== </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">X</span>(s): factor(cyl), disp, hp, drat </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">Y</span>(s): mpg </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> covars: vs, am, factor(gear) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Not build yet, run $build() method </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [] model ==========</span>
+<span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="fu">build</span><span class="op">(</span>f <span class="op">=</span> <span class="st">"gaussian"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="va">result</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      focal_term      variable    estimate          SE   CI       CI_low</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: factor(cyl)   (Intercept) 23.28425686 3.102848398 0.95  17.20278575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: factor(cyl)  factor(cyl)6 -5.34044537 1.887666208 0.95  -9.04020315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: factor(cyl)  factor(cyl)8 -8.50258933 3.046261922 0.95 -14.47315299</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: factor(cyl)            vs  1.68270326 2.353962963 0.95  -2.93097937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: factor(cyl)            am  4.31056447 2.156460225 0.95   0.08398010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: factor(cyl) factor(gear)4 -1.24673744 2.264460155 0.95  -5.68499779</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: factor(cyl) factor(gear)5 -2.08223718 2.637768301 0.95  -7.25216805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        disp   (Intercept) 24.65009765 3.360529174 0.95  18.06358150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        disp          disp -0.02821806 0.009243695 0.95  -0.04633537</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        disp            vs  3.32060607 1.856416709 0.95  -0.31790382</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:        disp            am  4.67281942 2.094171633 0.95   0.56831844</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:        disp factor(gear)4 -2.52785760 2.211888366 0.95  -6.86307914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        disp factor(gear)5 -2.89344598 2.574494892 0.95  -7.93936325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:          hp   (Intercept) 24.56544525 2.420389406 0.95  19.82156919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:          hp            hp -0.05145024 0.012010845 0.95  -0.07499106</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:          hp            vs  3.01661776 1.574374865 0.95  -0.06910027</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:          hp            am  5.11093165 1.798753134 0.95   1.58544029</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:          hp factor(gear)4 -1.34845141 1.896221483 0.95  -5.06497722</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:          hp factor(gear)5  1.16396634 2.363608073 0.95  -3.46862036</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:        drat   (Intercept)  5.36259687 7.058661715 0.95  -8.47212587</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:        drat          drat  3.01056864 2.245957350 0.95  -1.39142687</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:        drat            vs  6.56480882 1.648702814 0.95   3.33341068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:        drat            am  6.04958546 2.304973039 0.95   1.53192132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:        drat factor(gear)4 -2.50572707 2.796115713 0.95  -7.98601316</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:        drat factor(gear)5 -3.13453090 3.068393855 0.95  -9.14847234</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      focal_term      variable    estimate          SE   CI       CI_low</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         CI_high          t df_error            p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 29.36572797  7.5041555       25 6.182588e-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: -1.64068758 -2.8291259       25 4.667533e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: -2.53202568 -2.7911550       25 5.252031e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  6.29638589  0.7148385       25 4.747089e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  8.53714885  1.9989075       25 4.561837e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  3.19152291 -0.5505672       25 5.819304e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  3.08769369 -0.7893935       25 4.298820e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 31.23661380  7.3351834       26 2.214181e-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: -0.01010075 -3.0526817       26 2.268064e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  6.95911596  1.7887180       26 7.366023e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  8.77732040  2.2313450       26 2.565828e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:  1.80736393 -1.1428504       26 2.531007e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:  2.15247129 -1.1238888       26 2.610602e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 29.30932132 10.1493773       26 3.334845e-24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: -0.02790942 -4.2836487       26 1.838531e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:  6.10233579  1.9160734       26 5.535576e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:  8.63642301  2.8413747       26 4.491950e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:  2.36807440 -0.7111255       26 4.770065e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:  5.79655303  0.4924532       26 6.223990e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 19.19731961  0.7597186       26 4.474228e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:  7.41256416  1.3404389       26 1.801027e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:  9.79620695  3.9818024       26 6.839463e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 10.56724960  2.6245797       26 8.675598e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:  2.97455903 -0.8961457       26 3.701750e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:  2.87941055 -1.0215543       26 3.069919e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         CI_high          t df_error            p</span>
+<span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="va">forest_data</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     focal_term    variable         term  term_label   class level level_no  n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: factor(cyl) factor(cyl) factor(cyl)4 factor(cyl)  factor     4        1 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: factor(cyl)        &lt;NA&gt; factor(cyl)6 factor(cyl)  factor     6        2  7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: factor(cyl)        &lt;NA&gt; factor(cyl)8 factor(cyl)  factor     8        3 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        disp        disp         disp        disp numeric  &lt;NA&gt;       NA 32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:          hp          hp           hp          hp numeric  &lt;NA&gt;       NA 32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        drat        drat         drat        drat numeric  &lt;NA&gt;       NA 32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       estimate          SE   CI       CI_low     CI_high         t df_error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  0.00000000          NA   NA           NA          NA        NA       NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: -5.34044537 1.887666208 0.95  -9.04020315 -1.64068758 -2.829126       25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: -8.50258933 3.046261922 0.95 -14.47315299 -2.53202568 -2.791155       25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: -0.02821806 0.009243695 0.95  -0.04633537 -0.01010075 -3.052682       26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: -0.05145024 0.012010845 0.95  -0.07499106 -0.02790942 -4.283649       26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  3.01056864 2.245957350 0.95  -1.39142687  7.41256416  1.340439       26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               p reference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:           NA      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 4.667533e-03     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 5.252031e-03     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 2.268064e-03     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 1.838531e-05     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: 1.801027e-01     FALSE</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="fl">0</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">15</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-plt img"><img src="REGModelList-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
