@@ -2,7 +2,7 @@
 
 # File R/REGModel.R: @testexamples
 
-test_that("Function REGModel() @ L73", {
+test_that("Function REGModel() @ L76", {
   
   library(survival)
   test1 <- data.frame(
@@ -11,6 +11,7 @@ test_that("Function REGModel() @ L73", {
     x = c(0, 2, 1, 1, 1, 0, 0),
     sex = c(0, 0, 0, 0, 1, 1, 1)
   )
+  test1$sex <- factor(test1$sex)
   
   # --------------
   # Build a model
@@ -55,16 +56,18 @@ test_that("Function REGModel() @ L73", {
   treatment <- gl(3, 3)
   data <- data.frame(treatment, outcome, counts)
   
-  mm <- REGModel$new(
+  mm4 <- REGModel$new(
     data,
     counts ~ outcome + treatment,
     f = "poisson"
   )
-  mm
-  mm$get_forest_data()
-  mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
+  mm4
+  mm4$get_forest_data()
+  mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
   expect_is(mm, "REGModel")
   expect_is(mm2, "REGModel")
+  expect_equal(data.frame(mm$result), data.frame(mm2$result))
   expect_is(mm3, "REGModel")
+  expect_is(mm4, "REGModel")
 })
 

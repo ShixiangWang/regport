@@ -16,6 +16,7 @@ test1 <- data.frame(
   x = c(0, 2, 1, 1, 1, 0, 0),
   sex = c(0, 0, 0, 0, 1, 1, 1)
 )
+test1$sex <- factor(test1$sex)
 
 # --------------
 # Build a model
@@ -60,14 +61,14 @@ outcome <- gl(3, 1, 9)
 treatment <- gl(3, 3)
 data <- data.frame(treatment, outcome, counts)
 
-mm <- REGModel$new(
+mm4 <- REGModel$new(
   data,
   counts ~ outcome + treatment,
   f = "poisson"
 )
-mm
-mm$get_forest_data()
-mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
+mm4
+mm4$get_forest_data()
+mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

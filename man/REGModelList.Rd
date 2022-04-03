@@ -9,31 +9,40 @@ a list of regression model.
 Currently, this class is designed for CoxPH and GLM regression models.
 }
 \examples{
-library(survival)
-test1 <- data.frame(
-  time = c(4, 3, 1, 1, 2, 2, 3),
-  status = c(1, 1, 1, 0, 1, 1, 0),
-  x = c(0, 2, 1, 1, 1, 0, 0),
-  sex = c(0, 0, 0, 0, 1, 1, 1)
+ml <- REGModelList$new(
+  data = mtcars,
+  y = "mpg",
+  x = c("factor(cyl)", colnames(mtcars)[3:5]),
+  covars = c(colnames(mtcars)[8:9], "factor(gear)")
 )
+ml
+ml$build(f = "gaussian")
+ml$result
+ml$forest_data
+
+ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{data}}{a \code{data.table} storing modeling data.}
 
-\item{\code{recipe}}{an R \code{formula} storing model formula.}
+\item{\code{x}}{focal variables (terms).}
 
-\item{\code{terms}}{all terms (covariables, i.e. columns) used for building model.}
+\item{\code{y}}{predicted variables or expression.}
+
+\item{\code{covars}}{covariables.}
+
+\item{\code{mlist}}{a list of \code{REGModel}.}
 
 \item{\code{args}}{other arguments used for building model.}
-
-\item{\code{model}}{a constructed model.}
 
 \item{\code{type}}{model type (class).}
 
 \item{\code{result}}{model result, a object of \code{parameters_model}. Can be converted into
 data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.}
+
+\item{\code{forest_data}}{more detailed data used for plotting forest.}
 }
 \if{html}{\out{</div>}}
 }
@@ -41,7 +50,8 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{REGModelList$new()}}
-\item \href{#method-plot}{\code{REGModelList$plot()}}
+\item \href{#method-build}{\code{REGModelList$build()}}
+\item \href{#method-plot_forest}{\code{REGModelList$plot_forest()}}
 \item \href{#method-print}{\code{REGModelList$print()}}
 }
 }
@@ -49,17 +59,9 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Build a \code{REGModel} object.
+Create a \code{REGModelList} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModelList$new(
-  data,
-  recipe,
-  ...,
-  f = c("coxph", "binomial", "gaussian", "Gamma", "inverse.gaussian", "poisson",
-    "quasi", "quasibinomial", "quasipoisson"),
-  exp = TRUE,
-  ci = 0.95
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$new(data, y, x, covars = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -67,20 +69,46 @@ Build a \code{REGModel} object.
 \describe{
 \item{\code{data}}{a \code{data.table} storing modeling data.}
 
-\item{\code{recipe}}{an R \code{formula} or a list with two elements 'x' and 'y',
-where 'x' is for covariables and 'y' is for label. See example for detail
-operation.}
+\item{\code{y}}{predicted variables or expression.}
 
-\item{\code{...}}{other parameters passing to corresponding regression model function.}
+\item{\code{x}}{focal variables (terms).}
 
+\item{\code{covars}}{covariables.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+a \code{REGModelList} R6 object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-build"></a>}}
+\if{latex}{\out{\hypertarget{method-build}{}}}
+\subsection{Method \code{build()}}{
+Build \code{REGModelList} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$build(
+  f = c("coxph", "binomial", "gaussian", "Gamma", "inverse.gaussian", "poisson",
+    "quasi", "quasibinomial", "quasipoisson"),
+  exp = NULL,
+  ci = 0.95,
+  ...
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
 \item{\code{f}}{a length-1 string specifying modeling function or family of \code{\link[=glm]{glm()}}, default is 'coxph'.
 Other options are members of GLM family, see \code{\link[stats:family]{stats::family()}}.
 'binomial' is logistic, and 'gaussian' is linear.}
 
-\item{\code{exp}}{indicating whether or not to exponentiate the the coefficients.}
+\item{\code{exp}}{logical, indicating whether or not to exponentiate the the coefficients.}
 
 \item{\code{ci}}{confidence Interval (CI) level. Default to 0.95 (95\%).
 e.g. \code{\link[survival:coxph]{survival::coxph()}}.}
+
+\item{\code{...}}{other parameters passing to corresponding regression model function.}
 }
 \if{html}{\out{</div>}}
 }
@@ -89,20 +117,32 @@ a \code{REGModel} R6 object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot"></a>}}
-\if{latex}{\out{\hypertarget{method-plot}{}}}
-\subsection{Method \code{plot()}}{
-print the \code{REGModel} result with default plot methods from \strong{parameters} package.
+\if{html}{\out{<a id="method-plot_forest"></a>}}
+\if{latex}{\out{\hypertarget{method-plot_forest}{}}}
+\subsection{Method \code{plot_forest()}}{
+plot forest.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot_forest(ref_line = 1, xlim = c(0, 2), ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ref_line}}{reference line, default is \code{1} for HR.}
+
+\item{\code{xlim}}{limits of x axis.}
+
+\item{\code{...}}{other plot options passing to \code{\link[forestploter:forest]{forestploter::forest()}}.
+Also check \url{https://github.com/adayim/forestploter} to see more complex adjustment of the result plot.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
-print the \code{REGModel} object
+print the \code{REGModelList} object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REGModelList$print(...)}\if{html}{\out{</div>}}
 }

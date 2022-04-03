@@ -7,13 +7,20 @@
 #'
 #' @export
 #' @examples
-#' library(survival)
-#' test1 <- data.frame(
-#'   time = c(4, 3, 1, 1, 2, 2, 3),
-#'   status = c(1, 1, 1, 0, 1, 1, 0),
-#'   x = c(0, 2, 1, 1, 1, 0, 0),
-#'   sex = c(0, 0, 0, 0, 1, 1, 1)
+#' ml <- REGModelList$new(
+#'   data = mtcars,
+#'   y = "mpg",
+#'   x = c("factor(cyl)", colnames(mtcars)[3:5]),
+#'   covars = c(colnames(mtcars)[8:9], "factor(gear)")
 #' )
+#' ml
+#' ml$build(f = "gaussian")
+#' ml$result
+#' ml$forest_data
+#'
+#' ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
+#' @testexamples
+#' expect_is(ml, "REGModelList")
 REGModelList <- R6::R6Class(
   "REGModelList",
   inherit = NULL,
@@ -22,13 +29,15 @@ REGModelList <- R6::R6Class(
   lock_class = TRUE,
   public = list(
     #' @field data a `data.table` storing modeling data.
-    #' @field recipe an R `formula` storing model formula.
-    #' @field terms all terms (covariables, i.e. columns) used for building model.
+    #' @field x focal variables (terms).
+    #' @field y predicted variables or expression.
+    #' @field covars covariables.
+    #' @field mlist a list of `REGModel`.
     #' @field args other arguments used for building model.
-    #' @field model a constructed model.
     #' @field type model type (class).
     #' @field result model result, a object of `parameters_model`. Can be converted into
     #' data.frame with [as.data.frame()] or [data.table::as.data.table()].
+    #' @field forest_data more detailed data used for plotting forest.
     data = NULL,
     x = NULL,
     y = NULL,
@@ -40,64 +49,85 @@ REGModelList <- R6::R6Class(
     forest_data = NULL,
     #' @description Create a `REGModelList` object.
     #' @param data a `data.table` storing modeling data.
+    #' @param x focal variables (terms).
+    #' @param y predicted variables or expression.
+    #' @param covars covariables.
     #' @return a `REGModelList` R6 object.
     initialize = function(data, y, x, covars = NULL) {
       stopifnot(is.data.frame(data))
 
-      all_vars = merge_vars(x, y, covars)
+      all_vars <- merge_vars(x, y, covars)
       data <- data.table::as.data.table(data)
       if (!all(all_vars %in% colnames(data))) {
         rlang::abort(glue("Column not available: {all_vars[!all_vars %in% colnames(data)]}"))
       }
       data <- data[, all_vars, with = FALSE]
 
-      self$data = data
-      self$x = setdiff(x, y)
-      self$y = y
-      self$covars = covars
+      self$data <- data
+      self$x <- setdiff(x, y)
+      self$y <- y
+      self$covars <- covars
     },
-    build = function(
-    f = c(
-      "coxph", "binomial", "gaussian",
-      "Gamma", "inverse.gaussian",
-      "poisson", "quasi", "quasibinomial",
-      "quasipoisson"
-    ),
-    exp = NULL, ci = 0.95,
-    ...) {
+    #' @description Build `REGModelList` object.
+    #' @param f a length-1 string specifying modeling function or family of [glm()], default is 'coxph'.
+    #' Other options are members of GLM family, see [stats::family()].
+    #' 'binomial' is logistic, and 'gaussian' is linear.
+    #' @param ... other parameters passing to corresponding regression model function.
+    #' @param exp logical, indicating whether or not to exponentiate the the coefficients.
+    #' @param ci confidence Interval (CI) level. Default to 0.95 (95%).
+    #' e.g. [survival::coxph()].
+    #' @return a `REGModel` R6 object.
+    build = function(f = c(
+                       "coxph", "binomial", "gaussian",
+                       "Gamma", "inverse.gaussian",
+                       "poisson", "quasi", "quasibinomial",
+                       "quasipoisson"
+                     ),
+                     exp = NULL, ci = 0.95,
+                     ...) {
       f <- f[1]
       stopifnot(
         is.character(f),
         is.null(exp) || is.logical(exp)
       )
 
-      ml = list()
+      self$args <- list(...)
+      ml <- list()
       for (i in seq_along(self$x)) {
-        m = REGModel$new(
+        m <- REGModel$new(
           self$data,
-          recipe = list(x = unique(c(self$x[i], self$covars)),
-                        y = self$y),
+          recipe = list(
+            x = unique(c(self$x[i], self$covars)),
+            y = self$y
+          ),
           f = f, exp = exp, ci = ci, ...
         )
         m$get_forest_data()
-        ml[[i]] = m
+        ml[[i]] <- m
       }
-      self$mlist = ml
-      self$type = ml[[1]]$type
-      self$result = data.table::rbindlist(
+      self$mlist <- ml
+      self$type <- ml[[1]]$type
+      self$result <- data.table::rbindlist(
         lapply(
           seq_along(ml),
-          function(x) cbind(focal_term = self$x[x], ml[[x]]$result)),
+          function(x) cbind(focal_term = self$x[x], ml[[x]]$result)
+        ),
       )
-      colnames(self$result)[2:3] = c("variable", "estimate")
-      self$forest_data = data.table::rbindlist(
+      colnames(self$result)[2:3] <- c("variable", "estimate")
+      self$forest_data <- data.table::rbindlist(
         lapply(
           seq_along(ml),
-          function(x) cbind(focal_term = self$x[x], ml[[x]]$forest_data)),
+          function(x) cbind(focal_term = self$x[x], ml[[x]]$forest_data)
+        ),
       )
       # Only keep focal term
-      self$forest_data = self$forest_data[focal_term == term_label]
+      self$forest_data <- self$forest_data[focal_term == term_label]
     },
+    #' @description plot forest.
+    #' @param ref_line reference line, default is `1` for HR.
+    #' @param xlim limits of x axis.
+    #' @param ... other plot options passing to [forestploter::forest()].
+    #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
     plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
       data <- self$forest_data
       if (is.null(data)) {

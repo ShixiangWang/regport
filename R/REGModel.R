@@ -14,6 +14,7 @@
 #'   x = c(0, 2, 1, 1, 1, 0, 0),
 #'   sex = c(0, 0, 0, 0, 1, 1, 1)
 #' )
+#' test1$sex <- factor(test1$sex)
 #'
 #' # --------------
 #' # Build a model
@@ -58,18 +59,20 @@
 #' treatment <- gl(3, 3)
 #' data <- data.frame(treatment, outcome, counts)
 #'
-#' mm <- REGModel$new(
+#' mm4 <- REGModel$new(
 #'   data,
 #'   counts ~ outcome + treatment,
 #'   f = "poisson"
 #' )
-#' mm
-#' mm$get_forest_data()
-#' mm$plot_forest(xlim = c(-1, 3), ref_line = 0)
+#' mm4
+#' mm4$get_forest_data()
+#' mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
+#' expect_equal(data.frame(mm$result), data.frame(mm2$result))
 #' expect_is(mm3, "REGModel")
+#' expect_is(mm4, "REGModel")
 REGModel <- R6::R6Class(
   "REGModel",
   inherit = NULL,
@@ -153,6 +156,8 @@ REGModel <- R6::R6Class(
         } else {
           self$terms <- all.vars(recipe_list[[3]])
         }
+        # Strange, if input a formula from outsize, a environment is not attached
+        recipe <- stats::formula(deparse(recipe))
       }
 
       data <- data.table::as.data.table(data)
@@ -228,7 +233,7 @@ REGModel <- R6::R6Class(
   active = list()
 )
 
-plot_forest = function(data, ref_line = 1, xlim = c(0, 2), ...) {
+plot_forest <- function(data, ref_line = 1, xlim = c(0, 2), ...) {
   dt <- data[, c("variable", "level", "n")]
   # Add blank column for the forest plot to display CI.
   # Adjust the column width with space.
@@ -256,13 +261,13 @@ plot_forest = function(data, ref_line = 1, xlim = c(0, 2), ...) {
   data$CI_high <- data.table::fifelse(data$reference, ref_line, data$CI_high)
 
   p <- forestploter::forest(dt,
-                            est = data$estimate,
-                            lower = data$CI_low,
-                            upper = data$CI_high,
-                            ci_column = 4,
-                            ref_line = ref_line,
-                            xlim = xlim,
-                            ...
+    est = data$estimate,
+    lower = data$CI_low,
+    upper = data$CI_high,
+    ci_column = 4,
+    ref_line = ref_line,
+    xlim = xlim,
+    ...
   )
   p
 }
