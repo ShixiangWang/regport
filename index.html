@@ -28,7 +28,7 @@
     
     <a class="navbar-brand me-2" href="index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,10 +96,6 @@
     y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
-<span class="co">#&gt; data.frame [228, 3]</span>
-<span class="co">#&gt; survival::Surv(time, status) Surv 306 455 1010 210 883 1022~</span>
-<span class="co">#&gt; age                          dbl  74 68 56 57 60 74</span>
-<span class="co">#&gt; sex                          fct  1 1 1 1 1 1</span>
 
 <span class="va">model</span>
 <span class="co">#&gt; &lt;REGModel&gt;    ========== </span>
@@ -118,10 +114,6 @@
   <span class="va">lung</span>,
   recipe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">sex</span>
 <span class="op">)</span>
-<span class="co">#&gt; data.frame [228, 3]</span>
-<span class="co">#&gt; Surv(time, status) Surv 306 455 1010 210 883 1022 1 1 0 1 1~</span>
-<span class="co">#&gt; age                dbl  74 68 56 57 60 74</span>
-<span class="co">#&gt; sex                fct  1 1 1 1 1 1</span>
 
 <span class="va">model</span>
 <span class="co">#&gt; &lt;REGModel&gt;    ========== </span>
@@ -134,7 +126,7 @@
 <span class="co">#&gt; Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a</span>
 <span class="co">#&gt;   Wald z-distribution approximation.</span>
 <span class="co">#&gt; [coxph] model ==========</span></code></pre></div>
-<p>Visualize it:</p>
+<p>Take a look at the model result (package <code>see</code> is required):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
@@ -147,6 +139,7 @@
 <div class="section level2">
 <h2 id="batch-processing-models">Batch processing models<a class="anchor" aria-label="anchor" href="#batch-processing-models"></a>
 </h2>
+<p>For building a list of regression model, unlike above, a lazy building approach is used, i.e., <code>$build()</code> must manually typed after creating <code>REGModelList</code> object. (This also means you can check or modify the setting before building if necessary)</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ml</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/REGModelList.html">REGModelList</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">mtcars</span>,
@@ -164,30 +157,6 @@
 <span class="co">#&gt; Not build yet, run $build() method </span>
 <span class="co">#&gt; [] model ==========</span>
 <span class="va">ml</span><span class="op">$</span><span class="fu">build</span><span class="op">(</span>f <span class="op">=</span> <span class="st">"gaussian"</span><span class="op">)</span>
-<span class="co">#&gt; data.frame [32, 5]</span>
-<span class="co">#&gt; mpg          dbl 21 21 22.8 21.4 18.7 18.1</span>
-<span class="co">#&gt; factor(cyl)  fct 6 6 4 6 8 6</span>
-<span class="co">#&gt; vs           dbl 0 0 1 1 0 1</span>
-<span class="co">#&gt; am           dbl 1 1 1 0 0 0</span>
-<span class="co">#&gt; factor(gear) fct 4 4 4 3 3 3</span>
-<span class="co">#&gt; data.frame [32, 5]</span>
-<span class="co">#&gt; mpg          dbl 21 21 22.8 21.4 18.7 18.1</span>
-<span class="co">#&gt; disp         dbl 160 160 108 258 360 225</span>
-<span class="co">#&gt; vs           dbl 0 0 1 1 0 1</span>
-<span class="co">#&gt; am           dbl 1 1 1 0 0 0</span>
-<span class="co">#&gt; factor(gear) fct 4 4 4 3 3 3</span>
-<span class="co">#&gt; data.frame [32, 5]</span>
-<span class="co">#&gt; mpg          dbl 21 21 22.8 21.4 18.7 18.1</span>
-<span class="co">#&gt; hp           dbl 110 110 93 110 175 105</span>
-<span class="co">#&gt; vs           dbl 0 0 1 1 0 1</span>
-<span class="co">#&gt; am           dbl 1 1 1 0 0 0</span>
-<span class="co">#&gt; factor(gear) fct 4 4 4 3 3 3</span>
-<span class="co">#&gt; data.frame [32, 5]</span>
-<span class="co">#&gt; mpg          dbl 21 21 22.8 21.4 18.7 18.1</span>
-<span class="co">#&gt; drat         dbl 3.9 3.9 3.85 3.08 3.15 2.76</span>
-<span class="co">#&gt; vs           dbl 0 0 1 1 0 1</span>
-<span class="co">#&gt; am           dbl 1 1 1 0 0 0</span>
-<span class="co">#&gt; factor(gear) fct 4 4 4 3 3 3</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">ml</span><span class="op">$</span><span class="va">result</span><span class="op">)</span>
 <span class="co">#&gt; Classes 'data.table' and 'data.frame':   25 obs. of  10 variables:</span>
 <span class="co">#&gt;  $ focal_term: chr  "factor(cyl)" "factor(cyl)" "factor(cyl)" "factor(cyl)" ...</span>
@@ -230,10 +199,10 @@
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">covr</span><span class="fu">::</span><span class="fu">package_coverage</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; regport Coverage: 83.27%</span>
+<span class="co">#&gt; regport Coverage: 90.59%</span>
 <span class="co">#&gt; R/utils.R: 75.00%</span>
-<span class="co">#&gt; R/REGModelList.R: 79.31%</span>
-<span class="co">#&gt; R/REGModel.R: 85.14%</span></code></pre></div>
+<span class="co">#&gt; R/REGModel.R: 89.19%</span>
+<span class="co">#&gt; R/REGModelList.R: 98.28%</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="license">LICENSE<a class="anchor" aria-label="anchor" href="#license"></a>
@@ -279,9 +248,7 @@
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="lifecycle"></a></li>
 <li><a href="https://github.com/ShixiangWang/regport/actions" class="external-link"><img src="https://github.com/ShixiangWang/regport/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://cran.r-project.org/package=regport" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/regport?color=orange"></a></li>
-<li><a href="https://github.com/ShixiangWang/regport/issues?q=is%3Aissue+is%3Aclosed" class="external-link"><img src="https://img.shields.io/github/issues-closed/ShixiangWang/regport.svg" alt="Closed issues"></a></li>
-<li><a href="https://github.com/ShixiangWang/regport" class="external-link"><img src="https://tokei.rs/b1/github/ShixiangWang/regport?category=code" alt="Lines Of Code"></a></li>
-<li><a href="https://hits.seeyoufarm.com" class="external-link"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fsigminer&amp;count_bg=%2379C83D&amp;title_bg=%23555555&amp;icon=&amp;icon_color=%23E7E7E7&amp;title=hits&amp;edge_flat=false" alt="Hits"></a></li>
+<li><a href="https://hits.seeyoufarm.com" class="external-link"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fregport&amp;count_bg=%2379C83D&amp;title_bg=%23555555&amp;icon=&amp;icon_color=%23E7E7E7&amp;title=hits&amp;edge_flat=false" alt="Hits"></a></li>
 </ul>
 </div>
 

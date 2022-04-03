@@ -14,7 +14,7 @@ Currently, this class is designed for CoxPH and GLM regression models."><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -181,7 +181,7 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <h3 id="method-plot-forest-">Method <code>plot_forest()</code><a class="anchor" aria-label="anchor" href="#method-plot-forest-"></a></h3>
 <p>plot forest.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="fl">1</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModel</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="cn">NULL</span>, xlim <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -268,6 +268,19 @@ Also check <a href="https://github.com/adayim/forestploter" class="external-link
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         x    2.230706 1.83448 0.95 0.4450758 11.18022 0.9756088      Inf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           p</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.3292583</span>
+<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://easystats.github.io/see/" class="external-link">"see"</a></span><span class="op">)</span><span class="op">)</span> <span class="va">mm</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: see</span>
+<span class="r-plt img"><img src="REGModel-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span class="va">mm</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span>  <span class="co"># Same as print(mm)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;<span style="color: #FF55FF;">REGModel</span>&gt;    ========== </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameter | Coefficient |   SE |        95% CI |    z |     p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -------------------------------------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> x         |        2.23 | 1.83 | [0.45, 11.18] | 0.98 | 0.329</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Wald z-distribution approximation.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [<span style="color: #55FF55;">coxph</span>] model ==========</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># way 2:</span></span>
 <span class="r-in"><span class="va">mm2</span> <span class="op">&lt;-</span> <span class="va">REGModel</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
@@ -331,9 +344,12 @@ Also check <a href="https://github.com/adayim/forestploter" class="external-link
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Uncertainty intervals (profile-likelihood) and p values (two-tailed) computed</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   using a Wald z-distribution approximation.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [<span style="color: #55FF55;">glm/lm</span>] model ==========</span>
+<span class="r-in"><span class="va">mm4</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Never call '$get_forest_data()' before, run with default options to get plotting data</span>
+<span class="r-plt img"><img src="REGModel-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span class="va">mm4</span><span class="op">$</span><span class="fu">get_forest_data</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">mm4</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, ref_line <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span class="r-plt img"><img src="REGModel-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span class="va">mm4</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-plt img"><img src="REGModel-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
