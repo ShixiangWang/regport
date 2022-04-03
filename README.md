@@ -53,10 +53,6 @@ model = REGModel$new(
     y = c("time", "status")
   )
 )
-#> data.frame [228, 3]
-#> survival::Surv(time, status) Surv 306 455 1010 210 883 1022~
-#> age                          dbl  74 68 56 57 60 74
-#> sex                          fct  1 1 1 1 1 1
 
 model
 #> <REGModel>    ========== 
@@ -78,10 +74,6 @@ model = REGModel$new(
   lung,
   recipe = Surv(time, status) ~ age + sex
 )
-#> data.frame [228, 3]
-#> Surv(time, status) Surv 306 455 1010 210 883 1022 1 1 0 1 1~
-#> age                dbl  74 68 56 57 60 74
-#> sex                fct  1 1 1 1 1 1
 
 model
 #> <REGModel>    ========== 
@@ -132,30 +124,6 @@ ml
 #> Not build yet, run $build() method 
 #> [] model ==========
 ml$build(f = "gaussian")
-#> data.frame [32, 5]
-#> mpg          dbl 21 21 22.8 21.4 18.7 18.1
-#> factor(cyl)  fct 6 6 4 6 8 6
-#> vs           dbl 0 0 1 1 0 1
-#> am           dbl 1 1 1 0 0 0
-#> factor(gear) fct 4 4 4 3 3 3
-#> data.frame [32, 5]
-#> mpg          dbl 21 21 22.8 21.4 18.7 18.1
-#> disp         dbl 160 160 108 258 360 225
-#> vs           dbl 0 0 1 1 0 1
-#> am           dbl 1 1 1 0 0 0
-#> factor(gear) fct 4 4 4 3 3 3
-#> data.frame [32, 5]
-#> mpg          dbl 21 21 22.8 21.4 18.7 18.1
-#> hp           dbl 110 110 93 110 175 105
-#> vs           dbl 0 0 1 1 0 1
-#> am           dbl 1 1 1 0 0 0
-#> factor(gear) fct 4 4 4 3 3 3
-#> data.frame [32, 5]
-#> mpg          dbl 21 21 22.8 21.4 18.7 18.1
-#> drat         dbl 3.9 3.9 3.85 3.08 3.15 2.76
-#> vs           dbl 0 0 1 1 0 1
-#> am           dbl 1 1 1 0 0 0
-#> factor(gear) fct 4 4 4 3 3 3
 str(ml$result)
 #> Classes 'data.table' and 'data.frame':   25 obs. of  10 variables:
 #>  $ focal_term: chr  "factor(cyl)" "factor(cyl)" "factor(cyl)" "factor(cyl)" ...
