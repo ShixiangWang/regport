@@ -21,8 +21,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/ShixiangWang/regport/workflows/R-CMD-check/badge.svg)](https://github.com/ShixiangWang/regport/actions) 
 [![](https://cranlogs.r-pkg.org/badges/grand-total/regport?color=orange)](https://cran.r-project.org/package=regport) 
 [![Closed issues](https://img.shields.io/github/issues-closed/ShixiangWang/regport.svg)](https://github.com/ShixiangWang/regport/issues?q=is%3Aissue+is%3Aclosed) 
-[![Lines Of Code](https://tokei.rs/b1/github/ShixiangWang/regport?category=code)](https://github.com/ShixiangWang/regport) 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fsigminer&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fregport&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 <!-- badges: end -->
 
