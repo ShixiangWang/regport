@@ -10,8 +10,6 @@ status](https://www.r-pkg.org/badges/version/regport)](https://cran.r-project.or
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R-CMD-check](https://github.com/ShixiangWang/regport/workflows/R-CMD-check/badge.svg)](https://github.com/ShixiangWang/regport/actions)
 [![](https://cranlogs.r-pkg.org/badges/grand-total/regport?color=orange)](https://cran.r-project.org/package=regport)
-[![Closed
-issues](https://img.shields.io/github/issues-closed/ShixiangWang/regport.svg)](https://github.com/ShixiangWang/regport/issues?q=is%3Aissue+is%3Aclosed)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fregport&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 <!-- badges: end -->
@@ -88,7 +86,7 @@ model
 #> [coxph] model ==========
 ```
 
-Visualize it:
+Take a look at the model result (package `see` is required):
 
 ``` r
 model$plot()
@@ -106,6 +104,11 @@ model$plot_forest()
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ## Batch processing models
+
+For building a list of regression model, unlike above, a lazy building
+approach is used, i.e., `$build()` must manually typed after creating
+`REGModelList` object. (This also means you can check or modify the
+setting before building if necessary)
 
 ``` r
 ml <- REGModelList$new(
@@ -167,10 +170,10 @@ ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
 
 ``` r
 covr::package_coverage()
-#> regport Coverage: 83.27%
+#> regport Coverage: 90.59%
 #> R/utils.R: 75.00%
-#> R/REGModelList.R: 79.31%
-#> R/REGModel.R: 85.14%
+#> R/REGModel.R: 89.19%
+#> R/REGModelList.R: 98.28%
 ```
 
 ## LICENSE

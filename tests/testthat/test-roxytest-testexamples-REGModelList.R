@@ -2,7 +2,7 @@
 
 # File R/REGModelList.R: @testexamples
 
-test_that("Function REGModelList() @ L24", {
+test_that("Function REGModelList() @ L27", {
   
   ml <- REGModelList$new(
     data = mtcars,
@@ -11,11 +11,14 @@ test_that("Function REGModelList() @ L24", {
     covars = c(colnames(mtcars)[8:9], "factor(gear)")
   )
   ml
+  ml$print()
+  ml$plot_forest()
+  
   ml$build(f = "gaussian")
+  ml$print()
   ml$result
   ml$forest_data
-  
-  ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
+  ml$plot_forest()
   expect_is(ml, "REGModelList")
 })
 

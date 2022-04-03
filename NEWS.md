@@ -1,3 +1,7 @@
+# regport 0.2.1
+
+* Enhanced `plot_forest()` options.
+
 # regport 0.2.0
 
 * Designed core features implemented.

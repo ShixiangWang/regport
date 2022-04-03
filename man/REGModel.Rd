@@ -29,6 +29,8 @@ mm <- REGModel$new(
 )
 mm
 as.data.frame(mm$result)
+if (require("see")) mm$plot()
+mm$print()  # Same as print(mm)
 
 # way 2:
 mm2 <- REGModel$new(
@@ -67,8 +69,9 @@ mm4 <- REGModel$new(
   f = "poisson"
 )
 mm4
+mm4$plot_forest()
 mm4$get_forest_data()
-mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
+mm4$plot_forest()
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -170,7 +173,7 @@ get tidy data for plotting forest.
 \subsection{Method \code{plot_forest()}}{
 plot forest.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModel$plot_forest(ref_line = 1, xlim = c(0, 2), ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModel$plot_forest(ref_line = NULL, xlim = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

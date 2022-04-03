@@ -2,7 +2,7 @@
 
 # File R/REGModel.R: @testexamples
 
-test_that("Function REGModel() @ L76", {
+test_that("Function REGModel() @ L79", {
   
   library(survival)
   test1 <- data.frame(
@@ -24,6 +24,8 @@ test_that("Function REGModel() @ L76", {
   )
   mm
   as.data.frame(mm$result)
+  if (require("see")) mm$plot()
+  mm$print()  # Same as print(mm)
   
   # way 2:
   mm2 <- REGModel$new(
@@ -62,8 +64,9 @@ test_that("Function REGModel() @ L76", {
     f = "poisson"
   )
   mm4
+  mm4$plot_forest()
   mm4$get_forest_data()
-  mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
+  mm4$plot_forest()
   expect_is(mm, "REGModel")
   expect_is(mm2, "REGModel")
   expect_equal(data.frame(mm$result), data.frame(mm2$result))

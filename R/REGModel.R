@@ -27,6 +27,8 @@
 #' )
 #' mm
 #' as.data.frame(mm$result)
+#' if (require("see")) mm$plot()
+#' mm$print()  # Same as print(mm)
 #'
 #' # way 2:
 #' mm2 <- REGModel$new(
@@ -65,8 +67,9 @@
 #'   f = "poisson"
 #' )
 #' mm4
+#' mm4$plot_forest()
 #' mm4$get_forest_data()
-#' mm4$plot_forest(xlim = c(-1, 3), ref_line = 0)
+#' mm4$plot_forest()
 #' @testexamples
 #' expect_is(mm, "REGModel")
 #' expect_is(mm2, "REGModel")
@@ -207,7 +210,7 @@ REGModel <- R6::R6Class(
     #' @param xlim limits of x axis.
     #' @param ... other plot options passing to [forestploter::forest()].
     #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
-    plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
+    plot_forest = function(ref_line = NULL, xlim = NULL, ...) {
       data <- self$forest_data
       if (is.null(data)) {
         message("Never call '$get_forest_data()' before, run with default options to get plotting data")
@@ -234,6 +237,21 @@ REGModel <- R6::R6Class(
 )
 
 plot_forest <- function(data, ref_line = 1, xlim = c(0, 2), ...) {
+  stopifnot(is.null(xlim) || length(xlim) == 2L)
+  stopifnot(is.null(ref_line) || length(ref_line) == 1L)
+
+  if (is.null(ref_line)) {
+    model = get("self", rlang::caller_env())$model
+    ref_line <- if (inherits(model, "coxph") || (inherits(model, "glm") && model$family$link == "logit")) 1L else 0L
+  }
+
+  if (is.null(xlim)) {
+    xlim <- c(
+      floor(min(data$CI_low, na.rm = TRUE)),
+      ceiling(max(data$CI_high, na.rm = TRUE))
+    )
+  }
+
   dt <- data[, c("variable", "level", "n")]
   # Add blank column for the forest plot to display CI.
   # Adjust the column width with space.

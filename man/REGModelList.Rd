@@ -16,11 +16,14 @@ ml <- REGModelList$new(
   covars = c(colnames(mtcars)[8:9], "factor(gear)")
 )
 ml
+ml$print()
+ml$plot_forest()
+
 ml$build(f = "gaussian")
+ml$print()
 ml$result
 ml$forest_data
-
-ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
+ml$plot_forest()
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -122,7 +125,7 @@ a \code{REGModel} R6 object.
 \subsection{Method \code{plot_forest()}}{
 plot forest.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot_forest(ref_line = 1, xlim = c(0, 2), ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot_forest(ref_line = NULL, xlim = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

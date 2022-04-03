@@ -14,11 +14,14 @@
 #'   covars = c(colnames(mtcars)[8:9], "factor(gear)")
 #' )
 #' ml
+#' ml$print()
+#' ml$plot_forest()
+#'
 #' ml$build(f = "gaussian")
+#' ml$print()
 #' ml$result
 #' ml$forest_data
-#'
-#' ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
+#' ml$plot_forest()
 #' @testexamples
 #' expect_is(ml, "REGModelList")
 REGModelList <- R6::R6Class(
@@ -128,7 +131,7 @@ REGModelList <- R6::R6Class(
     #' @param xlim limits of x axis.
     #' @param ... other plot options passing to [forestploter::forest()].
     #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
-    plot_forest = function(ref_line = 1, xlim = c(0, 2), ...) {
+    plot_forest = function(ref_line = NULL, xlim = NULL, ...) {
       data <- self$forest_data
       if (is.null(data)) {
         message("Please run $build() before $plot_forest()")
