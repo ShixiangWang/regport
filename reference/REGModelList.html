@@ -14,7 +14,7 @@ Currently, this class is designed for CoxPH and GLM regression models."><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,6 +148,7 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
     <span class="st">"quasi"</span>, <span class="st">"quasibinomial"</span>, <span class="st">"quasipoisson"</span><span class="op">)</span>,
   exp <span class="op">=</span> <span class="cn">NULL</span>,
   ci <span class="op">=</span> <span class="fl">0.95</span>,
+  parallel <span class="op">=</span> <span class="cn">FALSE</span>,
   <span class="va">...</span>
 <span class="op">)</span></code></pre></div><p></p></div>
 </div>
@@ -167,6 +168,10 @@ Other options are members of GLM family, see <code><a href="https://rdrr.io/r/st
 <dt><code>ci</code></dt>
 <dd><p>confidence Interval (CI) level. Default to 0.95 (95%).
 e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">survival::coxph()</a></code>.</p></dd>
+
+
+<dt><code>parallel</code></dt>
+<dd><p>if <code>TRUE</code>, use N-1 cores to run the task.</p></dd>
 
 
 <dt><code>...</code></dt>
@@ -256,6 +261,7 @@ Also check <a href="https://github.com/adayim/forestploter" class="external-link
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="fu">build</span><span class="op">(</span>f <span class="op">=</span> <span class="st">"gaussian"</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="fu">build</span><span class="op">(</span>f <span class="op">=</span> <span class="st">"gaussian"</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">ml</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;<span style="color: #FF55FF;">REGModelList</span>&gt;    ========== </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
