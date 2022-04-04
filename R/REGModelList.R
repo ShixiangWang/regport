@@ -18,6 +18,7 @@
 #' ml$plot_forest()
 #'
 #' ml$build(f = "gaussian")
+#' ml$build(f = "gaussian", parallel = TRUE)
 #' ml$print()
 #' ml$result
 #' ml$forest_data
@@ -79,6 +80,7 @@ REGModelList <- R6::R6Class(
     #' @param exp logical, indicating whether or not to exponentiate the the coefficients.
     #' @param ci confidence Interval (CI) level. Default to 0.95 (95%).
     #' e.g. [survival::coxph()].
+    #' @param parallel if `TRUE`, use N-1 cores to run the task.
     #' @return a `REGModel` R6 object.
     build = function(f = c(
                        "coxph", "binomial", "gaussian",
@@ -87,6 +89,7 @@ REGModelList <- R6::R6Class(
                        "quasipoisson"
                      ),
                      exp = NULL, ci = 0.95,
+                     parallel = FALSE,
                      ...) {
       f <- f[1]
       stopifnot(
@@ -96,7 +99,20 @@ REGModelList <- R6::R6Class(
 
       self$args <- list(...)
       ml <- list()
-      for (i in seq_along(self$x)) {
+      # for (i in seq_along(self$x)) {
+      #   m <- REGModel$new(
+      #     self$data,
+      #     recipe = list(
+      #       x = unique(c(self$x[i], self$covars)),
+      #       y = self$y
+      #     ),
+      #     f = f, exp = exp, ci = ci, ...
+      #   )
+      #   m$get_forest_data()
+      #   ml[[i]] <- m
+      # }
+      #
+      build_one = function(i, ...) {
         m <- REGModel$new(
           self$data,
           recipe = list(
@@ -106,8 +122,24 @@ REGModelList <- R6::R6Class(
           f = f, exp = exp, ci = ci, ...
         )
         m$get_forest_data()
-        ml[[i]] <- m
+        m
       }
+
+      if (.Platform$OS.type == "windows") {
+        message("parallel computation from parallel package is not supported in Windows, disable it.")
+        parallel = FALSE
+      }
+
+      fcall = if (parallel) parallel::mclapply else lapply
+      args = if (!parallel) {
+        list(seq_along(self$x), FUN = build_one, ...)
+      } else {
+        list(seq_along(self$x), FUN = build_one,
+             mc.cores = max(parallel::detectCores() - 1L, 1L),
+             ...)
+      }
+      ml = do.call("fcall", args = args)
+
       self$mlist <- ml
       self$type <- ml[[1]]$type
       self$result <- data.table::rbindlist(

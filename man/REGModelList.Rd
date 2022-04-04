@@ -20,6 +20,7 @@ ml$print()
 ml$plot_forest()
 
 ml$build(f = "gaussian")
+ml$build(f = "gaussian", parallel = TRUE)
 ml$print()
 ml$result
 ml$forest_data
@@ -95,6 +96,7 @@ Build \code{REGModelList} object.
     "quasi", "quasibinomial", "quasipoisson"),
   exp = NULL,
   ci = 0.95,
+  parallel = FALSE,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -110,6 +112,8 @@ Other options are members of GLM family, see \code{\link[stats:family]{stats::fa
 
 \item{\code{ci}}{confidence Interval (CI) level. Default to 0.95 (95\%).
 e.g. \code{\link[survival:coxph]{survival::coxph()}}.}
+
+\item{\code{parallel}}{if \code{TRUE}, use N-1 cores to run the task.}
 
 \item{\code{...}}{other parameters passing to corresponding regression model function.}
 }

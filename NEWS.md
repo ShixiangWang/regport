@@ -1,3 +1,7 @@
+# regport 0.2.2
+
+* Added `parallel` option in `$build()` method to support parallel computation on Unix-like systems.
+
 # regport 0.2.1
 
 * Enhanced `plot_forest()` options.
