@@ -1,3 +1,8 @@
+# regport 0.2.3
+
+* Auto-rendering proper refline for model list.
+* Checked measure CI for plotting forest.
+
 # regport 0.2.2
 
 * Added `parallel` option in `$build()` method to support parallel computation on Unix-like systems.

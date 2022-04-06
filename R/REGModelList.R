@@ -112,7 +112,7 @@ REGModelList <- R6::R6Class(
       #   ml[[i]] <- m
       # }
       #
-      build_one = function(i, ...) {
+      build_one <- function(i, ...) {
         m <- REGModel$new(
           self$data,
           recipe = list(
@@ -127,18 +127,20 @@ REGModelList <- R6::R6Class(
 
       if (.Platform$OS.type == "windows") {
         message("parallel computation from parallel package is not supported in Windows, disable it.")
-        parallel = FALSE
+        parallel <- FALSE
       }
 
-      fcall = if (parallel) parallel::mclapply else lapply
-      args = if (!parallel) {
+      fcall <- if (parallel) parallel::mclapply else lapply
+      args <- if (!parallel) {
         list(seq_along(self$x), FUN = build_one, ...)
       } else {
-        list(seq_along(self$x), FUN = build_one,
-             mc.cores = max(parallel::detectCores() - 1L, 1L),
-             ...)
+        list(seq_along(self$x),
+          FUN = build_one,
+          mc.cores = max(parallel::detectCores() - 1L, 1L),
+          ...
+        )
       }
-      ml = do.call("fcall", args = args)
+      ml <- do.call("fcall", args = args)
 
       self$mlist <- ml
       self$type <- ml[[1]]$type

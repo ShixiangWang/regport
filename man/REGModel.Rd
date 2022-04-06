@@ -30,7 +30,7 @@ mm <- REGModel$new(
 mm
 as.data.frame(mm$result)
 if (require("see")) mm$plot()
-mm$print()  # Same as print(mm)
+mm$print() # Same as print(mm)
 
 # way 2:
 mm2 <- REGModel$new(

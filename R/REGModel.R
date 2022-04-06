@@ -28,7 +28,7 @@
 #' mm
 #' as.data.frame(mm$result)
 #' if (require("see")) mm$plot()
-#' mm$print()  # Same as print(mm)
+#' mm$print() # Same as print(mm)
 #'
 #' # way 2:
 #' mm2 <- REGModel$new(
@@ -241,7 +241,11 @@ plot_forest <- function(data, ref_line = 1, xlim = c(0, 2), ...) {
   stopifnot(is.null(ref_line) || length(ref_line) == 1L)
 
   if (is.null(ref_line)) {
-    model = get("self", rlang::caller_env())$model
+    model <- get("self", rlang::caller_env())$model
+    if (is.null(model)) {
+      # If it is a Model list
+      model <- get("self", rlang::caller_env())$mlist[[1]]
+    }
     ref_line <- if (inherits(model, "coxph") || (inherits(model, "glm") && model$family$link == "logit")) 1L else 0L
   }
 
@@ -250,6 +254,14 @@ plot_forest <- function(data, ref_line = 1, xlim = c(0, 2), ...) {
       floor(min(data$CI_low, na.rm = TRUE)),
       ceiling(max(data$CI_high, na.rm = TRUE))
     )
+    if (is.infinite(xlim[1])) {
+      warning("\ninfinite CI detected, set a minimal value -100", immediate. = TRUE)
+      xlim[1] <- -100
+    }
+    if (is.infinite(xlim[2])) {
+      warning("\ninfinite CI detected, set a maximal value 100", immediate. = TRUE)
+      xlim[2] <- 100
+    }
   }
 
   dt <- data[, c("variable", "level", "n")]
