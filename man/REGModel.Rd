@@ -103,6 +103,7 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \item \href{#method-plot_forest}{\code{REGModel$plot_forest()}}
 \item \href{#method-plot}{\code{REGModel$plot()}}
 \item \href{#method-print}{\code{REGModel$print()}}
+\item \href{#method-clone}{\code{REGModel$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -195,9 +196,16 @@ Also check \url{https://github.com/adayim/forestploter} to see more complex adju
 \subsection{Method \code{plot()}}{
 print the \code{REGModel$result} with default plot methods from \strong{see} package.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModel$plot()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModel$plot(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{other parameters passing to \code{plot()} in \code{see:::plot.see_parameters_model} function.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
@@ -212,6 +220,23 @@ print the \code{REGModel} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{unused.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REGModel$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
 }
 \if{html}{\out{</div>}}
 }

@@ -1,3 +1,8 @@
+# regport 0.2.4
+
+* Allowed passing other parameters to `$plot()` method.
+* Removed limits in R6 class, reset to default.
+
 # regport 0.2.3
 
 * Auto-rendering proper refline for model list.

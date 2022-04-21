@@ -28,9 +28,6 @@
 REGModelList <- R6::R6Class(
   "REGModelList",
   inherit = NULL,
-  cloneable = FALSE,
-  lock_objects = TRUE,
-  lock_class = TRUE,
   public = list(
     #' @field data a `data.table` storing modeling data.
     #' @field x focal variables (terms).

@@ -79,9 +79,6 @@
 REGModel <- R6::R6Class(
   "REGModel",
   inherit = NULL,
-  cloneable = FALSE,
-  lock_objects = TRUE,
-  lock_class = TRUE,
   public = list(
     #' @field data a `data.table` storing modeling data.
     #' @field recipe an R `formula` storing model formula.
@@ -219,8 +216,9 @@ REGModel <- R6::R6Class(
       plot_forest(data, ref_line, xlim, ...)
     },
     #' @description print the `REGModel$result` with default plot methods from **see** package.
-    plot = function() {
-      plot(self$result)
+    #' @param ... other parameters passing to `plot()` in `see:::plot.see_parameters_model` function.
+    plot = function(...) {
+      plot(self$result, ...)
     },
     #' @description print the `REGModel` object
     #' @param ... unused.

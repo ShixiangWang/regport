@@ -57,6 +57,7 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \item \href{#method-build}{\code{REGModelList$build()}}
 \item \href{#method-plot_forest}{\code{REGModelList$plot_forest()}}
 \item \href{#method-print}{\code{REGModelList$print()}}
+\item \href{#method-clone}{\code{REGModelList$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -158,6 +159,23 @@ print the \code{REGModelList} object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{unused.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
 }
 \if{html}{\out{</div>}}
 }
