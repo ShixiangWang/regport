@@ -310,6 +310,7 @@ make_forest_terms <- function(model, tidy_model, data,
   colnames(tidy_model)[1:2] <- c("term", "estimate")
 
   forest_terms <- merge(
+    # TODO: 这个对纯交互项处理也存在问题
     data.table::data.table(
       term_label = attr(model$terms, "term.labels")
     )[, variable := remove_backticks(term_label)],
