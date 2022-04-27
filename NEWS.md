@@ -1,5 +1,6 @@
 # regport 0.2.4
 
+* Wrapped error and remove failed model builds.
 * Allowed passing other parameters to `$plot()` method.
 * Removed limits in R6 class, reset to default.
 

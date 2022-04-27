@@ -110,15 +110,25 @@ REGModelList <- R6::R6Class(
       # }
       #
       build_one <- function(i, ...) {
-        m <- REGModel$new(
-          self$data,
-          recipe = list(
-            x = unique(c(self$x[i], self$covars)),
-            y = self$y
-          ),
-          f = f, exp = exp, ci = ci, ...
+        m <- tryCatch(
+          {
+            m <- REGModel$new(
+              self$data,
+              recipe = list(
+                x = unique(c(self$x[i], self$covars)),
+                y = self$y
+              ),
+              f = f, exp = exp, ci = ci, ...
+            )
+            m$get_forest_data()
+            m
+          },
+          error = function(e) {
+            message("failed for ", self$x[i], " due to following error")
+            message(e$message)
+            NULL
+          }
         )
-        m$get_forest_data()
         m
       }
 
@@ -139,20 +149,27 @@ REGModelList <- R6::R6Class(
       }
       ml <- do.call("fcall", args = args)
 
-      self$mlist <- ml
+      ml_status <- sapply(ml, is.null)
+      if (all(ml_status)) {
+        message("no model built, return NULL")
+        return(invisible(NULL))
+      }
+      xs <- self$x[!ml_status]
+      self$mlist <- ml[!ml_status]
+      ml <- ml[!ml_status]
       self$type <- ml[[1]]$type
       self$result <- data.table::rbindlist(
         lapply(
           seq_along(ml),
-          function(x) cbind(focal_term = self$x[x], ml[[x]]$result)
-        ),
+          function(x) cbind(focal_term = xs[x], ml[[x]]$result)
+        )
       )
       colnames(self$result)[2:3] <- c("variable", "estimate")
       self$forest_data <- data.table::rbindlist(
         lapply(
           seq_along(ml),
-          function(x) cbind(focal_term = self$x[x], ml[[x]]$forest_data)
-        ),
+          function(x) cbind(focal_term = xs[x], ml[[x]]$forest_data)
+        )
       )
       # Only keep focal term
       self$forest_data <- self$forest_data[focal_term == term_label]
