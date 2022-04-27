@@ -130,7 +130,13 @@ a \code{REGModel} R6 object.
 \subsection{Method \code{plot_forest()}}{
 plot forest.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot_forest(ref_line = NULL, xlim = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{REGModelList$plot_forest(
+  ref_line = NULL,
+  xlim = NULL,
+  vars = NULL,
+  p = NULL,
+  ...
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -139,6 +145,10 @@ plot forest.
 \item{\code{ref_line}}{reference line, default is \code{1} for HR.}
 
 \item{\code{xlim}}{limits of x axis.}
+
+\item{\code{vars}}{selected variables to show.}
+
+\item{\code{p}}{selected variables with level' pvalue lower than p.}
 
 \item{\code{...}}{other plot options passing to \code{\link[forestploter:forest]{forestploter::forest()}}.
 Also check \url{https://github.com/adayim/forestploter} to see more complex adjustment of the result plot.}

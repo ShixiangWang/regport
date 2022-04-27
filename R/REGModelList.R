@@ -177,13 +177,21 @@ REGModelList <- R6::R6Class(
     #' @description plot forest.
     #' @param ref_line reference line, default is `1` for HR.
     #' @param xlim limits of x axis.
+    #' @param vars selected variables to show.
+    #' @param p selected variables with level' pvalue lower than p.
     #' @param ... other plot options passing to [forestploter::forest()].
     #' Also check <https://github.com/adayim/forestploter> to see more complex adjustment of the result plot.
-    plot_forest = function(ref_line = NULL, xlim = NULL, ...) {
+    plot_forest = function(ref_line = NULL, xlim = NULL, vars = NULL, p = NULL, ...) {
       data <- self$forest_data
       if (is.null(data)) {
         message("Please run $build() before $plot_forest()")
         return(NULL)
+      }
+      if (!is.null(vars)) data <- data[data$focal_term %in% vars]
+      if (!is.null(p)) {
+        minps <- sapply(split(data, data$focal_term), function(x) min(x$p, na.rm = TRUE))
+        vars2 <- names(minps[minps < p])
+        data <- data[data$focal_term %in% vars2]
       }
       plot_forest(data, ref_line, xlim, ...)
     },
