@@ -1,8 +1,8 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-04-06T10:36Z
+last_built: 2022-05-10T03:04Z
 urls:
   reference: https://shixiangwang.github.io/regport/reference
   article: https://shixiangwang.github.io/regport/articles

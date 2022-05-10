@@ -14,7 +14,7 @@ Currently, this class is designed for CoxPH and GLM regression models."><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">regport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,6 +107,7 @@ data.frame with <code><a href="https://rdrr.io/r/base/as.data.frame.html" class=
 <li><p><a href="#method-build"><code>REGModelList$build()</code></a></p></li>
 <li><p><a href="#method-plot_forest"><code>REGModelList$plot_forest()</code></a></p></li>
 <li><p><a href="#method-print"><code>REGModelList$print()</code></a></p></li>
+<li><p><a href="#method-clone"><code>REGModelList$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Create a <code>REGModelList</code> object.</p><div class="section">
@@ -189,7 +190,13 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 <h3 id="method-plot-forest-">Method <code>plot_forest()</code><a class="anchor" aria-label="anchor" href="#method-plot-forest-"></a></h3>
 <p>plot forest.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>ref_line <span class="op">=</span> <span class="cn">NULL</span>, xlim <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">plot_forest</span><span class="op">(</span>
+  ref_line <span class="op">=</span> <span class="cn">NULL</span>,
+  xlim <span class="op">=</span> <span class="cn">NULL</span>,
+  vars <span class="op">=</span> <span class="cn">NULL</span>,
+  p <span class="op">=</span> <span class="cn">NULL</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -200,6 +207,14 @@ e.g. <code><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external
 
 <dt><code>xlim</code></dt>
 <dd><p>limits of x axis.</p></dd>
+
+
+<dt><code>vars</code></dt>
+<dd><p>selected variables to show.</p></dd>
+
+
+<dt><code>p</code></dt>
+<dd><p>selected variables with level' pvalue lower than p.</p></dd>
 
 
 <dt><code>...</code></dt>
@@ -221,6 +236,22 @@ Also check <a href="https://github.com/adayim/forestploter" class="external-link
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>unused.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-clone"></a><div class="section">
+<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p>The objects of this class are cloneable with this method.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">REGModelList</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>deep</code></dt>
+<dd><p>Whether to make a deep clone.</p></dd>
 
 
 </dl><p></p></div>
@@ -415,7 +446,7 @@ Also check <a href="https://github.com/adayim/forestploter" class="external-link
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer></div>
