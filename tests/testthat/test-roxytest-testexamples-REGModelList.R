@@ -2,7 +2,7 @@
 
 # File R/REGModelList.R: @testexamples
 
-test_that("Function REGModelList() @ L28", {
+test_that("Function REGModelList() @ L30", {
   
   ml <- REGModelList$new(
     data = mtcars,
@@ -15,7 +15,7 @@ test_that("Function REGModelList() @ L28", {
   ml$plot_forest()
   
   ml$build(f = "gaussian")
-  ml$build(f = "gaussian", parallel = TRUE)
+  
   ml$print()
   ml$result
   ml$forest_data

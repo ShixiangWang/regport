@@ -18,7 +18,9 @@
 #' ml$plot_forest()
 #'
 #' ml$build(f = "gaussian")
+#' \dontrun{
 #' ml$build(f = "gaussian", parallel = TRUE)
+#' }
 #' ml$print()
 #' ml$result
 #' ml$forest_data
