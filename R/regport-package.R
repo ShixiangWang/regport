@@ -14,6 +14,11 @@
 #' @importFrom glue glue
 #' @importFrom rlang .data
 #' @importFrom dplyr %>%
+#' @importFrom stats formula
+#' @importFrom R6 R6Class
+#' @importFrom parameters model_parameters
+#' @importFrom survival coxph
+#' @importFrom broom.helpers model_get_model_frame
 ## usethis namespace: end
 NULL
 

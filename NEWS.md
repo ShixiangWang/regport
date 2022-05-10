@@ -1,3 +1,7 @@
+# regport 0.3.0
+
+* Fixed a bug when parsing column names from interaction term.
+
 # regport 0.2.4
 
 * Supported selected plot in `$plot_forest()`, e.g., `ml$plot_forest(vars = c("disp", "hp"))`.

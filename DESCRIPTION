@@ -1,6 +1,6 @@
 Package: regport
 Title: Regression Model Processing Port
-Version: 0.2.4
+Version: 0.3.0
 Authors@R: 
     person("Shixiang", "Wang", , "w_shixiang@163.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-9855-7357"))

@@ -132,8 +132,8 @@ REGModel <- R6::R6Class(
         }
         x <- recipe$x
         y <- recipe$y
-        x_vars <- unique(sapply(x, get_vars))
-        y_vars <- unique(sapply(y, get_vars))
+        x_vars <- unique(unlist(sapply(x, get_vars)))
+        y_vars <- unique(unlist(sapply(y, get_vars)))
         self$terms <- x_vars
         all_vars <- c(x_vars, y_vars)
         # Update recipe to a formula
