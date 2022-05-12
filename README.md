@@ -11,6 +11,7 @@ status](https://www.r-pkg.org/badges/version/regport)](https://cran.r-project.or
 [![R-CMD-check](https://github.com/ShixiangWang/regport/workflows/R-CMD-check/badge.svg)](https://github.com/ShixiangWang/regport/actions)
 [![](https://cranlogs.r-pkg.org/badges/grand-total/regport?color=orange)](https://cran.r-project.org/package=regport)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fregport&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![Gitter](https://badges.gitter.im/ShixiangWang/community.svg)](https://gitter.im/ShixiangWang/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 <!-- badges: end -->
 
