@@ -1,3 +1,5 @@
+# News: Please switch to [regverse](https://github.com/ShixiangWang/regport)
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
