@@ -1,5 +1,3 @@
-# News: Please switch to [regverse](https://github.com/ShixiangWang/regport)
-
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -12,14 +10,15 @@ status](https://www.r-pkg.org/badges/version/regport)](https://cran.r-project.or
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R-CMD-check](https://github.com/ShixiangWang/regport/workflows/R-CMD-check/badge.svg)](https://github.com/ShixiangWang/regport/actions)
 [![](https://cranlogs.r-pkg.org/badges/grand-total/regport?color=orange)](https://cran.r-project.org/package=regport)
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FShixiangWang%2Fregport&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-[![Gitter](https://badges.gitter.im/ShixiangWang/community.svg)](https://gitter.im/ShixiangWang/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 <!-- badges: end -->
 
 The goal of regport is to provides R6 classes, methods and utilities to
 construct, analyze, summarize, and visualize regression models (CoxPH
 and GLMs).
+
+> This package is been superseded by
+> [bregr](https://cran.r-project.org/package=bregr).
 
 ## Installation
 
@@ -63,8 +62,8 @@ model
 #> age       |        1.02 | 9.38e-03 | [1.00, 1.04] |  1.85 | 0.065
 #> sex [2]   |        0.60 |     0.10 | [0.43, 0.83] | -3.06 | 0.002
 #> 
-#> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a
-#>   Wald z-distribution approximation.
+#> Uncertainty intervals (equal-tailed) and p-values (two-tailed) computed
+#>   using a Wald z-distribution approximation.
 #> [coxph] model ==========
 ```
 
@@ -84,8 +83,8 @@ model
 #> age       |        1.02 | 9.38e-03 | [1.00, 1.04] |  1.85 | 0.065
 #> sex [2]   |        0.60 |     0.10 | [0.43, 0.83] | -3.06 | 0.002
 #> 
-#> Uncertainty intervals (equal-tailed) and p values (two-tailed) computed using a
-#>   Wald z-distribution approximation.
+#> Uncertainty intervals (equal-tailed) and p-values (two-tailed) computed
+#>   using a Wald z-distribution approximation.
 #> [coxph] model ==========
 ```
 
@@ -173,10 +172,10 @@ ml$plot_forest(ref_line = 0, xlim = c(-15, 8))
 
 ``` r
 covr::package_coverage()
-#> regport Coverage: 90.59%
+#> regport Coverage: 85.28%
 #> R/utils.R: 75.00%
-#> R/REGModel.R: 89.19%
-#> R/REGModelList.R: 98.28%
+#> R/REGModelList.R: 81.91%
+#> R/REGModel.R: 87.56%
 ```
 
 ## LICENSE

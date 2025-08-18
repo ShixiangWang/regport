@@ -55,16 +55,16 @@ data.frame with \code{\link[=as.data.frame]{as.data.frame()}} or \code{\link[dat
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{REGModelList$new()}}
-\item \href{#method-build}{\code{REGModelList$build()}}
-\item \href{#method-plot_forest}{\code{REGModelList$plot_forest()}}
-\item \href{#method-print}{\code{REGModelList$print()}}
-\item \href{#method-clone}{\code{REGModelList$clone()}}
+\item \href{#method-REGModelList-new}{\code{REGModelList$new()}}
+\item \href{#method-REGModelList-build}{\code{REGModelList$build()}}
+\item \href{#method-REGModelList-plot_forest}{\code{REGModelList$plot_forest()}}
+\item \href{#method-REGModelList-print}{\code{REGModelList$print()}}
+\item \href{#method-REGModelList-clone}{\code{REGModelList$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-REGModelList-new"></a>}}
+\if{latex}{\out{\hypertarget{method-REGModelList-new}{}}}
 \subsection{Method \code{new()}}{
 Create a \code{REGModelList} object.
 \subsection{Usage}{
@@ -89,14 +89,14 @@ a \code{REGModelList} R6 object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-build"></a>}}
-\if{latex}{\out{\hypertarget{method-build}{}}}
+\if{html}{\out{<a id="method-REGModelList-build"></a>}}
+\if{latex}{\out{\hypertarget{method-REGModelList-build}{}}}
 \subsection{Method \code{build()}}{
 Build \code{REGModelList} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{REGModelList$build(
-  f = c("coxph", "binomial", "gaussian", "Gamma", "inverse.gaussian", "poisson",
-    "quasi", "quasibinomial", "quasipoisson"),
+  f = c("coxph", "binomial", "gaussian", "Gamma", "inverse.gaussian", "poisson", "quasi",
+    "quasibinomial", "quasipoisson"),
   exp = NULL,
   ci = 0.95,
   parallel = FALSE,
@@ -127,8 +127,8 @@ a \code{REGModel} R6 object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-plot_forest"></a>}}
-\if{latex}{\out{\hypertarget{method-plot_forest}{}}}
+\if{html}{\out{<a id="method-REGModelList-plot_forest"></a>}}
+\if{latex}{\out{\hypertarget{method-REGModelList-plot_forest}{}}}
 \subsection{Method \code{plot_forest()}}{
 plot forest.
 \subsection{Usage}{
@@ -159,8 +159,8 @@ Also check \url{https://github.com/adayim/forestploter} to see more complex adju
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-print"></a>}}
-\if{latex}{\out{\hypertarget{method-print}{}}}
+\if{html}{\out{<a id="method-REGModelList-print"></a>}}
+\if{latex}{\out{\hypertarget{method-REGModelList-print}{}}}
 \subsection{Method \code{print()}}{
 print the \code{REGModelList} object
 \subsection{Usage}{
@@ -176,8 +176,8 @@ print the \code{REGModelList} object
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-REGModelList-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-REGModelList-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

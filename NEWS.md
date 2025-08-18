@@ -1,3 +1,7 @@
+# regport 0.3.1
+
+* Re-documented.
+
 # regport 0.3.0
 
 * Fixed a bug when parsing column names from interaction term.
